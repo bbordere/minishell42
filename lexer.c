@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/23 17:00:12 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/23 22:07:53 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,24 +17,34 @@
 
 int		ft_issep(int c)
 {
-	return (c == '\"' || c == '\''); //c == '{' || c == '}' || c == '(' || c == ')'
+	return (c == '\"' || c == '\'');
 }
 
+int		ft_ispar(int c)
+{
+	return (c == '(' || c == ')');
+}
 
 size_t	ft_word_size(char *str, size_t i)
 {
 	size_t	size;
+	char	sep;
 
 	size = 0;
 	if (ft_issep(str[i]))
 	{
+		sep = str[i];
 		i++;
-		while (str[i + size] && !ft_issep(str[i + size]))
+		while (str[i + size] && str[i + size] != sep)
 			size++;
 		size += 2;
 	}
+	else if (str[i] == '(')
+		return (1);
+	else if (str[i] == ')')
+		return (1);
 	else
-		while (str[i + size] && !ft_isspace(str[i + size]))
+		while (str[i + size] && !ft_isspace(str[i + size]) && !ft_ispar(str[i + size]))
 			size++;
 	return (size);	
 }
@@ -44,6 +54,7 @@ size_t	ft_block_count(char *str)
 {
 	size_t	i;
 	size_t	nb;
+	char	sep;
 
 	i = 0;
 	nb = 0;
@@ -51,15 +62,21 @@ size_t	ft_block_count(char *str)
 	{
 		while(str[i] && ft_isspace(str[i]))
 			i++;
-		if (ft_issep(str[i++]))
+		if (ft_ispar(str[i]))
 		{
-			while (str[i] && !ft_issep(str[i++]));
+			nb++;
+			i++;
+		}
+		else if (ft_issep(str[i++]))
+		{
+			sep = str[i - 1];
+			while (str[i] && str[i++] != sep);
 			nb++;
 		}
 		else
 		{
 			nb++;
-			while (str[i] && !ft_isspace(str[i++]));
+			while (str[i] && !ft_ispar(str[i]) && !ft_isspace(str[i++]));
 		}
 		while(str[i] && ft_isspace(str[i]))
 			i++;
@@ -71,6 +88,7 @@ char	**ft_lexer(char *str)
 {
 	char	**res;
 	char	*temp;
+	char	sep;
 	size_t	i;
 	size_t	j;
 
@@ -81,8 +99,17 @@ char	**ft_lexer(char *str)
 		return (NULL);
 	while (++i < ft_block_count(str))
 	{
-		while (str[j] && ft_isspace(str[j]) && !ft_issep(str[j]))
+		if (ft_issep(str[j]))
+		{
+			sep = str[j];
+			while (str[j] && str[j] != sep)
+				j++;
+		}
+		else if (str[j] == '(' && j != 0)
 			j++;
+		else
+			while (str[j] && ft_isspace(str[j]) && !ft_issep(str[j]) && !ft_ispar(str[j]))
+				j++;
 		temp = ft_substr(str, j, ft_word_size(str, j));
 		if (!temp)
 			return (NULL);
@@ -93,7 +120,7 @@ char	**ft_lexer(char *str)
 	return (res);	
 }
 
-enum	e_tokens
+enum	e_type
 {
 	WORD = 1,
 	PIPE = 2,
@@ -103,8 +130,8 @@ enum	e_tokens
 	AND = 6,
 	D_AND = 7,
 	I_PAR = 8,
-	O_PAR = 9
-
+	O_PAR = 9,
+	VAR = 10
 };
 
 typedef struct s_token
@@ -135,6 +162,8 @@ t_token	*ft_init_token(char *val)
 		token->type = AND;
 	else if (!ft_strncmp(val, "\"", 1))
 		token->type = ARGS;
+	else if (!ft_strncmp(val, "$", 1))
+		token->type = VAR;
 	else
 		token->type = WORD;
 }
@@ -161,9 +190,9 @@ t_token	**ft_tokenize(char **tab)
 	return (res);			
 }
 
-int main(int argc, char const *argv[])
+int main(int argc, char **av)
 {
-	char str[] = "ceci est un braquage || ( \"ceci est un test\"456 456   (te   st)     &&  |            )                   \'ete\'456                     ";
+	char *str = av[1];
 	char **tab;
 	t_token	**tabo;
 
