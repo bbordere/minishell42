@@ -6,14 +6,17 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/23 22:07:53 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/24 16:59:48 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft/includes/libft.h"
 #include <stdio.h>
 
-
+int		ft_isspecchar(int c)
+{
+	return (c == '<' || c == '>' || c == '|' || c == '&');
+}
 
 int		ft_issep(int c)
 {
@@ -39,12 +42,12 @@ size_t	ft_word_size(char *str, size_t i)
 			size++;
 		size += 2;
 	}
-	else if (str[i] == '(')
+	else if (ft_ispar(str[i]) || (ft_isspecchar(str[i]) && !ft_isspecchar(str[i + 1])))
 		return (1);
-	else if (str[i] == ')')
-		return (1);
+	else if (ft_isspecchar(str[i]) && ft_isspecchar(str[i + 1]))
+		return (2);
 	else
-		while (str[i + size] && !ft_isspace(str[i + size]) && !ft_ispar(str[i + size]))
+		while (str[i + size] && !ft_isspace(str[i + size]) && !ft_ispar(str[i + size]) && !ft_isspecchar(str[i + size]))
 			size++;
 	return (size);	
 }
@@ -67,16 +70,28 @@ size_t	ft_block_count(char *str)
 			nb++;
 			i++;
 		}
-		else if (ft_issep(str[i++]))
+		if (ft_issep(str[i]))
+			i++;
+		// else if (ft_issep(str[i]))
+		// {
+		// 	sep = str[i];
+		// 	while (str[i] && str[i] != sep)
+		// 		i++;
+		// 	nb++;
+		// }
+		else if (ft_isspecchar(str[i]))
 		{
-			sep = str[i - 1];
-			while (str[i] && str[i++] != sep);
-			nb++;
+			if (!ft_isspace(str[i]))
+				nb++;
+			if (ft_isspecchar(str[i + 1]))
+				i++;
+			i++;
 		}
 		else
 		{
 			nb++;
-			while (str[i] && !ft_ispar(str[i]) && !ft_isspace(str[i++]));
+			while (str[i] && !ft_ispar(str[i]) && !ft_isspace(str[i]) && !ft_isspecchar(str[i]))
+				i++;
 		}
 		while(str[i] && ft_isspace(str[i]))
 			i++;
@@ -105,8 +120,6 @@ char	**ft_lexer(char *str)
 			while (str[j] && str[j] != sep)
 				j++;
 		}
-		else if (str[j] == '(' && j != 0)
-			j++;
 		else
 			while (str[j] && ft_isspace(str[j]) && !ft_issep(str[j]) && !ft_ispar(str[j]))
 				j++;
@@ -131,7 +144,11 @@ enum	e_type
 	D_AND = 7,
 	I_PAR = 8,
 	O_PAR = 9,
-	VAR = 10
+	VAR = 10,
+	R_IN = 11,
+	R_HERE_DOC = 12,
+	R_OUT = 13,
+	R_APPEND = 14
 };
 
 typedef struct s_token
@@ -156,10 +173,18 @@ t_token	*ft_init_token(char *val)
 		token->type = I_PAR;
 	else if (!ft_strncmp(val, ")", 1))
 		token->type = O_PAR;
-	else if (!ft_strncmp(val, "&&", ft_strlen(val)))
-		token->type = D_AND;
+	else if (!ft_strncmp(val, "<", ft_strlen(val)))
+		token->type = R_IN;
+	else if (!ft_strncmp(val, "<<", ft_strlen(val)))
+		token->type = R_HERE_DOC;
+	else if (!ft_strncmp(val, ">", ft_strlen(val)))
+		token->type = R_OUT;
+	else if (!ft_strncmp(val, ">>", ft_strlen(val)))
+		token->type = R_APPEND;
 	else if (!ft_strncmp(val, "&", ft_strlen(val)))
 		token->type = AND;
+	else if (!ft_strncmp(val, "&&", ft_strlen(val)))
+		token->type = D_AND;
 	else if (!ft_strncmp(val, "\"", 1))
 		token->type = ARGS;
 	else if (!ft_strncmp(val, "$", 1))
@@ -178,7 +203,7 @@ t_token	**ft_tokenize(char **tab)
 	i = 0;
 	while (tab[size])
 		size++;
-	res = malloc(sizeof(t_token *) * size);
+	res = malloc(sizeof(t_token *) * (size + 1));
 	if (!res)
 		return (NULL);
 	while (tab[i])
@@ -199,12 +224,12 @@ int main(int argc, char **av)
 	tab = ft_lexer(str);
 	tabo = ft_tokenize(tab);
 	int i = 0;
+	// printf("%lu\n", ft_block_count(str));
 	while (tabo[i])
 	{
 		printf("%d %s\n", tabo[i]->type, tabo[i]->val);
 		i++;
-	}
-	
+	}	
 	// printf("%lu", ft_word_size(str, 0));
 	
 	return 0;
