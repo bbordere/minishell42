@@ -29,7 +29,8 @@ enum	e_type
 	R_HERE_DOC = 12,
 	R_OUT = 13,
 	R_APPEND = 14,
-	T_NULL = 15
+	T_NULL = 15,
+	WILDCARD = 16
 };
 
 typedef struct s_token
@@ -49,3 +50,4 @@ size_t	ft_block_count(char *str);
 int	ft_init_op(t_token *token, char *val);
 t_token	*ft_init_token(char *val);
 t_token	**ft_tokenize(char **tab);
+char	**ft_lexer(char *str);

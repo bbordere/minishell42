@@ -26,3 +26,9 @@ int	ft_ispar(int c)
 {
 	return (c == '(' || c == ')');
 }
+
+void	ft_skip_spaces(char *str, size_t *i)
+{
+	while (str[*i] && ft_isspace(str[*i]))
+		(*i)++;
+}

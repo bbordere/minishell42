@@ -26,6 +26,8 @@ int	ft_init_op(t_token *token, char *val)
 		token->type = AND;
 	else if (!ft_strncmp(val, "&&", ft_strlen(val)))
 		token->type = D_AND;
+	else if (ft_strnstr(val, "*", ft_strlen(val)) && !ft_issep(*val))
+		token->type = WILDCARD;
 	if (token->type == T_NULL)
 		return (0);
 	return (1);
@@ -50,7 +52,7 @@ t_token	*ft_init_token(char *val)
 		token->type = I_PAR;
 	else if (!ft_strncmp(val, ")", 1))
 		token->type = O_PAR;
-	else if (!ft_strncmp(val, "\"", 1))
+	else if (!ft_strncmp(val, "\"", 1) || !ft_strncmp(val, "\'", 1))
 		token->type = ARGS;
 	else if (!ft_strncmp(val, "$", 1))
 		token->type = VAR;

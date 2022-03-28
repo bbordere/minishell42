@@ -6,11 +6,26 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/25 13:45:15 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/26 22:05:17 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer.h"
+
+size_t	ft_size_var(char *str, size_t i)
+{
+	size_t	size;
+
+	i++;
+	size = 0;
+	while (str[i] && !ft_isspace(str[i]) && !ft_isspecchar(str[i])
+		&& !ft_issep(str[i]) && str[i] != '$' && !ft_ispar(str[i]))
+	{
+		i++;
+		size++;
+	}
+	return (size + 1);
+}
 
 size_t	ft_word_size(char *str, size_t i)
 {
@@ -18,7 +33,9 @@ size_t	ft_word_size(char *str, size_t i)
 	char	sep;
 
 	size = 0;
-	if (ft_issep(str[i]))
+	if (str[i] == '$')
+		return (ft_size_var(str, i));
+	else if (ft_issep(str[i]))
 	{
 		sep = str[i];
 		i++;
@@ -33,8 +50,9 @@ size_t	ft_word_size(char *str, size_t i)
 		return (2);
 	else
 		while (str[i + size] && !ft_isspace(str[i + size])
-			&& !ft_ispar(str[i + size]) && !ft_isspecchar(str[i + size]))
-			size++;
+			&& !ft_isspecchar(str[i + size]) && !ft_issep(str[i + size])
+			&& str[i + size] != '$' && !ft_ispar(str[i + size]))
+				size++;
 	return (size);
 }
 
@@ -83,26 +101,34 @@ char	**ft_lexer(char *str)
 	return (res);
 }
 
+// void	ft_free(char **tab)
+// {
+// 	int	i;
 
+// 	i = -1;
+// 	while (tab[++i])
+// 		free(tab[i]);
+// 	free(tab);
+// }
 
+// int main(int argc, char **av)
+// {
+// 	char *str = av[1];
+// 	char **tab;
+// 	t_token	**tabo;
 
-int main(int argc, char **av)
-{
-	char *str = av[1];
-	char **tab;
-	t_token	**tabo;
-
-	tab = ft_lexer(str);
-	tabo = ft_tokenize(tab);
-	int i = 0;
-	// printf("%lu\n", ft_block_count(str));
-	while (tabo[i])
-	{
-		printf("%d %s\n", tabo[i]->type, tabo[i]->val);
-		i++;
-	}
-	return 0;
-}
+// 	tab = ft_lexer(str);
+// 	tabo = ft_tokenize(tab);
+// 	int i = 0;
+// 	// printf("\t\t%lu\n", ft_block_count(str));
+// 	while (tabo[i])
+// 	{
+// 		printf("%d %s\n", tabo[i]->type, tabo[i]->val);
+// 		i++;
+// 	}
+// 	ft_free(tab);
+// 	ft_free(tabo);
+// 	return 0;
+// }
 
 // [ceci, est, un, brea, "  ee ", w]
-

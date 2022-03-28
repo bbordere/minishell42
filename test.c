@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 13:57:41 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/22 15:41:35 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/26 22:35:39 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,19 +18,80 @@
 #include <sys/stat.h>
 #include <readline/history.h>
 
+#include "lexer/lexer.h"
+
+void	ft_free(char **tab)
+{
+	int	i;
+
+	i = -1;
+	while (tab[++i])
+		free(tab[i]);
+	free(tab);
+}
+
+int	ft_check_option(char **args)
+{
+	int	i;
+
+	i = -1;
+	while (args[++i])
+		if (!strcmp(args[i], "-n") && i == 0)
+			return (1);
+	return (0);
+}
+
+int	ft_echo(char **args)
+{
+	int	n;
+	int	limit;
+	int	i;
+
+	if (!args)
+	{
+		printf("\n");
+		return (1);
+	}
+	n = ft_check_option(args);
+	limit = 0;
+	while (args[limit])
+		limit++;
+	i = 0;
+	if (n)
+		i = 1;
+	while (i < limit)
+	{
+		printf("%s", args[i]);
+		i++;
+		if (args[i])
+			printf(" ");
+	}
+	if (!n)
+		printf("\n");
+}
+
 int main(int argc, char const *argv[])
 {
 	char	*str;
+	char	buf[4096];
+	char	**tab;
+	char	*temp;
+
 	while (1)
 	{
-		str = readline("\e[1m\e[34mminishell > \e[0m");
-		if (!str)
-		{
-			printf("\nGood Bye !\n");
-			break;
-		}
-		printf("%s\n", str);
-		free(str);
+		str = ft_strdup(getcwd(buf, 4096));
+		temp = ft_strjoin(str, " \e[1m\e[34mminishell > \e[0m");
+		printf("%s\n", temp);
+		// str = readline(buf);
+		// if (!str)
+		// {
+		// 	printf("\nGood Bye !\n");
+		// 	break;
+		// }
+		// tab = ft_lexer(str);
+		// ft_echo(tab);
+		// ft_free(tab);
+		// free(str);
 	}
 	// str = malloc(2500);
 	// getcwd(str,2500);
