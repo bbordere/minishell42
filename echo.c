@@ -77,7 +77,8 @@ int	ft_echo(char **args)
 	}
 	n = ft_check_option(args);
 	limit = -1;
-	while (args[++limit]);
+	while (args[++limit])
+;
 	i = 0;
 	if (n)
 		i = 1;

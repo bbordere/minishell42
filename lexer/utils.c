@@ -32,3 +32,13 @@ void	ft_skip_spaces(char *str, size_t *i)
 	while (str[*i] && ft_isspace(str[*i]))
 		(*i)++;
 }
+
+void	ft_free(char **tab)
+{
+	int	i;
+
+	i = -1;
+	while (tab[++i])
+		free(tab[i]);
+	free(tab);
+}

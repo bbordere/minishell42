@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/22 13:57:41 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/26 22:35:39 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/28 14:16:26 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,16 +19,6 @@
 #include <readline/history.h>
 
 #include "lexer/lexer.h"
-
-void	ft_free(char **tab)
-{
-	int	i;
-
-	i = -1;
-	while (tab[++i])
-		free(tab[i]);
-	free(tab);
-}
 
 int	ft_check_option(char **args)
 {
@@ -68,11 +58,13 @@ int	ft_echo(char **args)
 	}
 	if (!n)
 		printf("\n");
+	return (1);
 }
 
 int main(int argc, char const *argv[])
 {
 	char	*str;
+	char	*input;
 	char	buf[4096];
 	char	**tab;
 	char	*temp;
@@ -81,17 +73,17 @@ int main(int argc, char const *argv[])
 	{
 		str = ft_strdup(getcwd(buf, 4096));
 		temp = ft_strjoin(str, " \e[1m\e[34mminishell > \e[0m");
-		printf("%s\n", temp);
-		// str = readline(buf);
-		// if (!str)
-		// {
-		// 	printf("\nGood Bye !\n");
-		// 	break;
-		// }
-		// tab = ft_lexer(str);
-		// ft_echo(tab);
-		// ft_free(tab);
-		// free(str);
+		input = readline(temp);
+		if (!input)
+		{
+			printf("\nGood Bye !\n");
+			break;
+		}
+		tab = ft_lexer(input);
+		ft_echo(tab);
+		ft_free(tab);
+		free(temp);
+		free(input);
 	}
 	// str = malloc(2500);
 	// getcwd(str,2500);

@@ -79,6 +79,6 @@ t_token	**ft_tokenize(char **tab)
 		res[i] = ft_init_token(tab[i]);
 		i++;
 	}
-	res[i] = '\0';
+	res[i] = NULL;
 	return (res);
 }

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/26 22:05:17 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/28 16:30:33 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	ft_skip_sep(char *str, size_t *i)
 		(*i)++;
 }
 
-void	*ft_fill_tab(char *str, size_t *i, size_t *j,char **res)
+void	ft_fill_tab(char *str, size_t *i, size_t *j, char **res)
 {
 	char	*temp;
 
@@ -77,7 +77,7 @@ void	*ft_fill_tab(char *str, size_t *i, size_t *j,char **res)
 			(*j)++;
 	temp = ft_substr(str, *j, ft_word_size(str, *j));
 	if (!temp)
-		return (NULL); //free all tab + return NULL
+		return ; //free all tab + return NULL
 	res[*i] = temp;
 	*j += ft_word_size(str, *j);
 	(*i)++;
@@ -97,19 +97,9 @@ char	**ft_lexer(char *str)
 		return (NULL);
 	while (i < ft_block_count(str))
 		ft_fill_tab(str, &i, &j, res);
-	res[i] = '\0';
+	res[i] = NULL;
 	return (res);
 }
-
-// void	ft_free(char **tab)
-// {
-// 	int	i;
-
-// 	i = -1;
-// 	while (tab[++i])
-// 		free(tab[i]);
-// 	free(tab);
-// }
 
 // int main(int argc, char **av)
 // {
