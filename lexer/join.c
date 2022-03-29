@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:08:45 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/29 00:16:29 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/29 14:14:34 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ char	**ft_join(t_token **tokens)
 // 	int i = 0;
 // 	// printf("\t\t%lu\n", ft_block_count(str));
 // 	t_token	**te = ft_tokenize(joined);
-// 	while (joined[i])
+// 	while (te[i])
 // 	{
 // 		ft_printf("%d %s\n", te[i]->type, te[i]->val);
 // 		i++;

@@ -26,9 +26,14 @@ void	ft_count_word_sep(char *str, size_t *i, size_t *nb)
 
 void	ft_count_word_spec(char *str, size_t *i, size_t *nb)
 {
+	char	sep;
+
 	if (!ft_isspace(str[*i]))
+	{
+		sep = str[(*i)];
 		(*nb)++;
-	if (ft_isspecchar(str[(*i) + 1]))
+	}
+	if (ft_isspecchar(str[(*i) + 1]) && str[(*i) + 1] == sep)
 		(*i)++;
 	(*i)++;
 }
