@@ -50,5 +50,6 @@ size_t	ft_block_count(char *str);
 int	ft_init_op(t_token *token, char *val);
 t_token	*ft_init_token(char *val);
 t_token	**ft_tokenize(char **tab);
-void	ft_free(char **tab);
+void	ft_free(void **tab);
 char	**ft_lexer(char *str);
+char	**ft_join(t_token **tokens);

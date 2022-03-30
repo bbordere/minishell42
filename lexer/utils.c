@@ -33,7 +33,7 @@ void	ft_skip_spaces(char *str, size_t *i)
 		(*i)++;
 }
 
-void	ft_free(char **tab)
+void	ft_free(void **tab)
 {
 	int	i;
 
