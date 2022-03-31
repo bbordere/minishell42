@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 14:46:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/30 15:38:30 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/31 14:54:41 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,31 +97,31 @@ void	ft_check_builtin(t_token **tokens)
 	}
 }
 
-int main(int argc, char **av)
-{
-	char *str = av[1];
-	char **tab;
-	t_token	**tabo;
+// int main(int argc, char **av)
+// {
+// 	char *str = av[1];
+// 	char **tab;
+// 	t_token	**tabo;
 
-	tab = ft_lexer(str);
-	tabo = ft_tokenize(tab);
+// 	tab = ft_lexer(str);
+// 	tabo = ft_tokenize(tab);
 
-	char **joined;
-	joined = ft_join(tabo);
-	int i = 0;
-	// printf("\t\t%lu\n", ft_block_count(str));
-	t_token	**te = ft_tokenize(joined);
-	// ft_check_grammar(te) ? printf("OK\n") : printf("KO\n");
-	ft_check_builtin(te);
-	while (te[i])
-	{
-		// printf("%d\n", te[i]->type);
-		i++;
-	}
+// 	char **joined;
+// 	joined = ft_join(tabo);
+// 	int i = 0;
+// 	// printf("\t\t%lu\n", ft_block_count(str));
+// 	t_token	**te = ft_tokenize(joined);
+// 	ft_check_grammar(te) ? printf("OK\n") : printf("KO\n");
+// 	ft_check_builtin(te);
+// 	while (te[i])
+// 	{
+// 		printf("%d %s\n", te[i]->type, te[i]->val);
+// 		i++;
+// 	}
 
-	ft_free((void **)joined);
-	ft_free((void **)te);
-	ft_free((void **)tabo);
-	ft_free((void **)tab);
-	return 0;
-}
+// 	ft_free((void **)joined);
+// 	ft_free((void **)te);
+// 	ft_free((void **)tabo);
+// 	ft_free((void **)tab);
+// 	return 0;
+// }

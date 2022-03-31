@@ -41,4 +41,5 @@ void	ft_free(void **tab)
 	while (tab[++i])
 		free(tab[i]);
 	free(tab);
+	tab = NULL;
 }

@@ -52,7 +52,7 @@ t_token	*ft_init_token(char *val)
 		token->type = I_PAR;
 	else if (!ft_strncmp(val, ")", 1))
 		token->type = O_PAR;
-	else if (!ft_strncmp(val, "\"", 1) || !ft_strncmp(val, "\'", 1))
+	else if (!ft_strncmp(val, "\"", 1))
 		token->type = ARGS;
 	else if (!ft_strncmp(val, "$", 1))
 		token->type = VAR;

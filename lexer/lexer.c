@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/30 14:46:04 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/03/31 16:01:00 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ size_t	ft_word_size(char *str, size_t i)
 	size = 0;
 	sep = str[i];
 	if (str[i] == '$')
+		return (ft_size_var(str, i));
+	else if (str[i] == '&' && str[i + 1] != '&' && !ft_issep(str[i + 1]) && !ft_isspace(str[i + 1]) && !ft_isspecchar(str[i + 1]) && !ft_ispar(str[i + 1]))
 		return (ft_size_var(str, i));
 	else if (ft_issep(str[i]))
 	{
