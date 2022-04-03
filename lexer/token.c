@@ -40,7 +40,7 @@ t_token	*ft_init_token(char *val)
 	token = malloc(sizeof(t_token));
 	if (!token)
 		return (NULL);
-	token->val = val;
+	token->val = ft_strdup(val);
 	token->type = T_NULL;
 	if (ft_init_op(token, val))
 		return (token);

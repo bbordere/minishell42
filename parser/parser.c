@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 14:46:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/03/31 14:54:41 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/02 15:32:24 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,15 @@ int	ft_check_op(t_token **tokens, size_t	i)
 {
 	if (i == 0 || i == ft_tab_size(tokens) - 1)
 		return (0);
-	return (tokens[i - 1]->type == WORD && tokens[i + 1]->type == WORD);
+	return ((tokens[i - 1]->type == WORD || tokens[i - 1]->type == ARGS || tokens[i - 1]->type == VAR)
+		&& (tokens[i + 1]->type == WORD || tokens[i + 1]->type == ARGS || tokens[i + 1]->type == VAR));
 }
 
 int	ft_check_here_doc(t_token **tokens, size_t i)
 {
 	if (i == ft_tab_size(tokens) - 1)
 		return (0);
-	return (tokens[i + 1]->type == WORD);
+	return (tokens[i + 1]->type == WORD || tokens[i + 1]->type == VAR);
 }
 
 int	ft_check_grammar(t_token **tokens)
@@ -47,6 +48,8 @@ int	ft_check_grammar(t_token **tokens)
 	size_t	i;
 	int		res;
 
+	if (ft_tab_size(tokens) == 1)
+		return (1);
 	i = 0;
 	res = 1;
 	while (tokens[i])
@@ -59,7 +62,7 @@ int	ft_check_grammar(t_token **tokens)
 		if (!res)
 			return (0);
 	}
-	return (res);	
+	return (1);
 }
 
 int	ft_isbuiltin(char *val)
@@ -67,7 +70,7 @@ int	ft_isbuiltin(char *val)
 	char	**tab;
 
 	tab = ft_lexer(val);
-	if (!tab)
+	if (!tab || !*tab)
 		return (0);
 	if (ft_strnstr(tab[0], "echo", ft_strlen(tab[0]))
 		|| ft_strnstr(tab[0], "cd", ft_strlen(tab[0]))
