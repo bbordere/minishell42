@@ -41,7 +41,7 @@ void	ft_count_word_spec(char *str, size_t *i, size_t *nb)
 void	ft_count_word(char *str, size_t *i, size_t *nb)
 {
 	while (str[*i] && !ft_isspace(str[*i]) && !ft_isspecchar(str[*i])
-		&& !ft_issep(str[*i]) && str[*i] != '$' && !ft_ispar(str[*i]))
+		&& !ft_issep(str[*i]) && !ft_ispar(str[*i]))
 		(*i)++;
 	(*nb)++;
 }
@@ -50,7 +50,7 @@ void	ft_count_var(char *str, size_t *i, size_t *nb)
 {
 	(*i)++;
 	while (str[*i] && !ft_isspace(str[*i]) && !ft_isspecchar(str[*i])
-		&& !ft_issep(str[*i]) && str[*i] != '$' && !ft_ispar(str[*i]))
+		&& !ft_issep(str[*i]) && !ft_ispar(str[*i]))
 		(*i)++;
 	(*nb)++;
 }

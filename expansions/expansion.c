@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/04 16:34:39 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/05 00:32:18 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,13 @@ t_data	*ft_init_data(char **envp)
 }
 
 
+void	*ft_return_dup(char *str, char *dup)
+{
+	free(str - 1);
+	if (!dup)
+		return (NULL);
+	return  (ft_strdup(dup));
+}
 
 char	*ft_get_var(t_list **env, char *str)
 {
@@ -64,21 +71,19 @@ char	*ft_get_var(t_list **env, char *str)
 	char	*content;
 
 	if (!env || !(*env))
-		return (NULL);
+		return (ft_return_dup(str, NULL));
+	if (!ft_strncmp(str, "?", 1))
+		return (ft_return_dup(str, "RETURN CODE"));
 	temp = *env;
 	len = ft_strlen(str);
 	while (temp)
 	{
 		content = temp->content;
 		if (!ft_strncmp(str, content, len) && content[len] == '=')
-		{
-			free(str - 1);
-			return (ft_strdup(&content[len + 1]));
-		}
+			return (ft_return_dup(str, &content[len + 1]));
 		temp = temp->next;
 	}
-	free(str - 1);
-	return (ft_strdup(""));
+	return (ft_return_dup(str, ""));
 }
 
 static size_t	ft_count_var(char *str)
@@ -102,6 +107,21 @@ static size_t	ft_count_var(char *str)
 	return (nb);
 }
 
+static size_t	ft_len_var(char *str, size_t i)
+{
+	size_t	size;
+
+	i++;
+	size = 0;
+	while (str[i] && !ft_isspace(str[i]) && !ft_isspecchar(str[i])
+		&& !ft_issep(str[i]) && str[i] != '$' && !ft_ispar(str[i]))
+	{
+		i++;
+		size++;
+	}
+	return (size + 1);
+}
+
 char	**ft_extract_var(char *str)
 {
 	char	**res;
@@ -119,7 +139,7 @@ char	**ft_extract_var(char *str)
 	{
 		if (str[i + 1] && str[i] == '$' && str[i + 1] != '$')
 		{
-			res[j] = ft_substr(str, i, ft_size_var(str, i));
+			res[j] = ft_substr(str, i, ft_len_var(str, i));
 			j++;
 		}
 		i++;
@@ -166,6 +186,19 @@ char	*ft_charjoin(char *str, char c)
 	return (res);
 }
 
+char **ft_fill_str(t_list **env, char *str, size_t *i, size_t *j, char **res)
+{
+	char	**vars;
+
+	vars = vars = ft_extract_var(str);
+	if (!vars)
+		return (NULL);
+	*res = NULL;
+	*i = 0;
+	*j = 0;
+	return (vars);
+}
+
 char	*ft_expand_str(t_list **env, char *str)
 {
 	char	**vars;
@@ -173,23 +206,22 @@ char	*ft_expand_str(t_list **env, char *str)
 	size_t	i;
 	size_t	j;
 
-	vars = ft_extract_var(str);
+	vars = ft_fill_str(env, str, &i, &j, &res);
 	if (!vars)
 		return (NULL);
-	res = NULL;
-	i = -1;
-	j = 0;
-	while (str[++i])
+	while (str[i])
 	{
 		if (str[i] == '$')
 		{
 			res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
-			while (str[i + 1] && !ft_isspace(str[i + 1]) && !ft_isspecchar(str[i + 1])
-					&& !ft_issep(str[i + 1]) && str[i + 1] != '$' && !ft_ispar(str[i + 1]))
+			while (str[i + 1] && !ft_isspace(str[i + 1])
+				&& !ft_isspecchar(str[i + 1]) && !ft_issep(str[i + 1])
+				&& str[i + 1] != '$' && !ft_ispar(str[i + 1]))
 					i++;
 		}
 		else
 			res = ft_charjoin(res, str[i]);
+		i++;
 	}
 	free(str);
 	free(vars);
@@ -203,9 +235,7 @@ void	ft_expand(t_token **tokens, t_list **env)
 	i = 0;
 	while (tokens[i])
 	{
-		if (tokens[i]->type == VAR)
-			tokens[i]->val = ft_get_var(env, tokens[i]->val + 1);
-		else if (tokens[i]->type == ARGS)
+		if (tokens[i]->type == VAR || tokens[i]->type == ARGS)
 			tokens[i]->val = ft_expand_str(env, tokens[i]->val);
 		i++;
 	}	
@@ -250,15 +280,15 @@ int main(int ac, char **av, char **env)
 	int i = 0;
 
 	
-	// printf("\t\t%lu\n", ft_block_count(str));
+	// // printf("\t\t%lu\n", ft_block_count(str));
 	t_token	**te = ft_tokenize(joined);
 	ft_check_grammar(te) ? printf("OK\n") : printf("KO\n");
 	ft_check_builtin(te);
 
 
-	i = 0;
-	while (te[i])
-		printf("%s\n", te[i++]->val);
+	i = -1;
+	while (te[++i])
+		printf("%s\n", te[i]->val);
 
 	i = 0;
 	while (tabo[i])

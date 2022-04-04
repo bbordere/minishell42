@@ -54,7 +54,7 @@ t_token	*ft_init_token(char *val)
 		token->type = O_PAR;
 	else if (!ft_strncmp(val, "\"", 1))
 		token->type = ARGS;
-	else if (!ft_strncmp(val, "$", 1))
+	else if (ft_strnstr(val, "$", ft_strlen(val)) && ft_strlen(val) != 1)
 		token->type = VAR;
 	else
 		token->type = WORD;
@@ -79,6 +79,6 @@ t_token	**ft_tokenize(char **tab)
 		res[i] = ft_init_token(tab[i]);
 		i++;
 	}
-	res[i] = NULL;
+	res[size] = NULL;
 	return (res);
 }

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/02 15:35:17 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/04 22:11:03 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ size_t	ft_size_var(char *str, size_t i)
 	i++;
 	size = 0;
 	while (str[i] && !ft_isspace(str[i]) && !ft_isspecchar(str[i])
-		&& !ft_issep(str[i]) && str[i] != '$' && !ft_ispar(str[i]))
+		&& !ft_issep(str[i]) && !ft_ispar(str[i]))
 	{
 		i++;
 		size++;
@@ -53,7 +53,7 @@ size_t	ft_word_size(char *str, size_t i)
 	else
 		while (str[i + size] && !ft_isspace(str[i + size])
 			&& !ft_isspecchar(str[i + size]) && !ft_issep(str[i + size])
-			&& str[i + size] != '$' && !ft_ispar(str[i + size]))
+			&& !ft_ispar(str[i + size]))
 				size++;
 	return (size);
 }
@@ -90,16 +90,18 @@ char	**ft_lexer(char *str)
 	char	**res;
 	size_t	i;
 	size_t	j;
+	size_t	nb;
 	char	*temp;
 
 	i = 0;
 	j = 0;
-	res = malloc((ft_block_count(str) + 1) * sizeof(char *));
+	nb = ft_block_count(str);
+	res = malloc((nb + 1) * sizeof(char *));
 	if (!res)
 		return (NULL);
-	while (i < ft_block_count(str))
+	while (i < nb)
 		ft_fill_tab(str, &i, &j, res);
-	res[i] = NULL;
+	res[nb] = NULL;
 	return (res);
 }
 
