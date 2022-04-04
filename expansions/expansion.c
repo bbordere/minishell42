@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/03 15:46:50 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/04 16:34:39 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,13 +260,13 @@ int main(int ac, char **av, char **env)
 	while (te[i])
 		printf("%s\n", te[i++]->val);
 
-
 	i = 0;
 	while (tabo[i])
 		free(tabo[i++]->val);
 	i = 0;
 	while (te[i])
 		free(te[i++]->val);
+
 	ft_lstdel_all(data->env);
 	free(data);
 	ft_free((void **)joined);

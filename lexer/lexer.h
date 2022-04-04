@@ -54,3 +54,4 @@ void	ft_free(void **tab);
 size_t	ft_size_var(char *str, size_t i);
 char	**ft_lexer(char *str);
 char	**ft_join(t_token **tokens);
+size_t	ft_tab_size(t_token	**tokens);

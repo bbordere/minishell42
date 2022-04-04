@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:08:45 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/03 15:55:05 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/04 16:33:51 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,37 @@ size_t	ft_count_join(t_token **tokens)
 	return (nb);
 }
 
+// char	**ft_join(t_token **tokens)
+// {
+// 	size_t	nb;
+// 	size_t	i;
+// 	size_t	j;
+// 	char	**res;
+// 	char	*temp;
+
+// 	nb = ft_count_join(tokens);
+// 	res = malloc(sizeof(char *) * (nb + 1));
+// 	if (!res)
+// 		return (NULL);
+// 	i = 0;
+// 	j = 0;
+// 	while (j < nb)
+// 	{
+// 		temp = NULL;
+// 		if (tokens[i] && !ft_islimit(tokens[i]->type))
+// 		{
+// 			while (tokens[i] && !ft_islimit(tokens[i]->type))
+// 				temp = ft_strjoin(ft_strjoin(temp, tokens[i++]->val), " ");
+// 		res[j++] = ft_strdup(temp);
+// 		free(temp);
+// 		}
+// 		else
+// 			res[j++] = ft_strdup(tokens[i++]->val);
+// 	}
+// 	res[j] = NULL;
+// 	return (res);
+// }
+
 char	**ft_join(t_token **tokens)
 {
 	size_t	nb;
@@ -52,6 +83,7 @@ char	**ft_join(t_token **tokens)
 	char	*temp;
 
 	nb = ft_count_join(tokens);
+	printf("%lu\n", nb);
 	res = malloc(sizeof(char *) * (nb + 1));
 	if (!res)
 		return (NULL);
@@ -60,15 +92,25 @@ char	**ft_join(t_token **tokens)
 	while (j < nb)
 	{
 		temp = NULL;
-		if (tokens[i] && !ft_islimit(tokens[i]->type))
+		if (tokens[i] && tokens[i]->type == VAR)
+			while (tokens[i] && tokens[i]->type == VAR)
+				temp = ft_strjoin(temp, tokens[i++]->val);
+		else if (tokens[i] && !ft_islimit(tokens[i]->type))
 		{
 			while (tokens[i] && !ft_islimit(tokens[i]->type))
-				temp = ft_strjoin(ft_strjoin(temp, tokens[i++]->val), " ");
-		res[j++] = ft_strdup(temp);
-		free(temp);
+			{
+				if (tokens[i]->type == VAR)
+					temp = ft_strjoin(temp, tokens[i++]->val);
+				else
+					temp = ft_strjoin(ft_strjoin(temp, tokens[i++]->val), " ");
+			}	
+			if (temp[ft_strlen(temp) - 1] == ' ')
+				temp[ft_strlen(temp) - 1] = '\0';
 		}
 		else
-			res[j++] = ft_strdup(tokens[i++]->val);
+			temp = ft_strdup(tokens[i++]->val);
+		res[j++] = ft_strdup(temp);
+		free(temp);		
 	}
 	res[j] = NULL;
 	return (res);

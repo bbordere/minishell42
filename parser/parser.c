@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 14:46:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/02 15:32:24 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/04 16:49:09 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ void	ft_check_builtin(t_token **tokens)
 		i++;
 	}
 }
+
 
 // int main(int argc, char **av)
 // {
