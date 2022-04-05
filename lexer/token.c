@@ -12,6 +12,17 @@
 
 #include "lexer.h"
 
+int	ft_isfulldollar(char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i])
+		if (str[i++] != '$')
+			return (0);
+	return (1);	
+}
+
 int	ft_init_op(t_token *token, char *val)
 {
 	if (!ft_strncmp(val, "<", ft_strlen(val)))
@@ -22,7 +33,7 @@ int	ft_init_op(t_token *token, char *val)
 		token->type = R_OUT;
 	else if (!ft_strncmp(val, ">>", ft_strlen(val)))
 		token->type = R_APPEND;
-	else if (!ft_strncmp(val, "&", ft_strlen(val)))
+	else if (!ft_strncmp(val, "&", ft_strlen(val)) || *val == '\'')
 		token->type = WORD;
 	else if (!ft_strncmp(val, "&&", ft_strlen(val)))
 		token->type = D_AND;
@@ -54,7 +65,7 @@ t_token	*ft_init_token(char *val)
 		token->type = O_PAR;
 	else if (!ft_strncmp(val, "\"", 1))
 		token->type = ARGS;
-	else if (ft_strnstr(val, "$", ft_strlen(val)) && ft_strlen(val) != 1)
+	else if (ft_strnstr(val, "$", ft_strlen(val)) && !ft_isfulldollar(val))
 		token->type = VAR;
 	else
 		token->type = WORD;

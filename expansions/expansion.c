@@ -6,15 +6,11 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/05 00:32:18 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/05 15:15:53 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../lexer/lexer.h"
-
-typedef struct s_data{
-	t_list **env;
-}	t_data;
 
 t_list	**ft_init_env(t_list **env, char **envp)
 {
@@ -63,6 +59,16 @@ void	*ft_return_dup(char *str, char *dup)
 		return (NULL);
 	return  (ft_strdup(dup));
 }
+char	*ft_strjoin2(char *s1, char *s2);
+
+void	*ft_expand_return_code(char *str)
+{
+	char	*res;
+
+	res = ft_strjoin2(ft_strdup("{RETURN CODE}"), ft_strdup(&str[1]));
+	free(str - 1);
+	return (res);
+}
 
 char	*ft_get_var(t_list **env, char *str)
 {
@@ -73,7 +79,7 @@ char	*ft_get_var(t_list **env, char *str)
 	if (!env || !(*env))
 		return (ft_return_dup(str, NULL));
 	if (!ft_strncmp(str, "?", 1))
-		return (ft_return_dup(str, "RETURN CODE"));
+		return (ft_expand_return_code(str));
 	temp = *env;
 	len = ft_strlen(str);
 	while (temp)
@@ -190,7 +196,7 @@ char **ft_fill_str(t_list **env, char *str, size_t *i, size_t *j, char **res)
 {
 	char	**vars;
 
-	vars = vars = ft_extract_var(str);
+	vars = ft_extract_var(str);
 	if (!vars)
 		return (NULL);
 	*res = NULL;
@@ -211,7 +217,7 @@ char	*ft_expand_str(t_list **env, char *str)
 		return (NULL);
 	while (str[i])
 	{
-		if (str[i] == '$')
+		if (str[i + 1] && str[i] == '$' && str[i + 1] != '$')
 		{
 			res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
 			while (str[i + 1] && !ft_isspace(str[i + 1])
@@ -258,51 +264,51 @@ void	ft_lstdel_all(t_list **lst)
 	free(lst);
 }
 
-int main(int ac, char **av, char **env)
-{
-	t_data	*data;
+// int main(int ac, char **av, char **env)
+// {
+// 	t_data	*data;
 
-	data = ft_init_data(env);
+// 	data = ft_init_data(env);
 
-	char *str = av[1];
-	char **tab;
-	t_token	**tabo;
+// 	char *str = av[1];
+// 	char **tab;
+// 	t_token	**tabo;
 
-	tab = ft_lexer(str);
-	tabo = ft_tokenize(tab);
+// 	tab = ft_lexer(str);
+// 	tabo = ft_tokenize(tab);
 
 
 	
 
-	ft_expand(tabo, data->env);
-	char **joined;
-	joined = ft_join(tabo);
-	int i = 0;
+// 	ft_expand(tabo, data->env);
+// 	char **joined;
+// 	joined = ft_join(tabo);
+// 	int i = 0;
 
 	
-	// // printf("\t\t%lu\n", ft_block_count(str));
-	t_token	**te = ft_tokenize(joined);
-	ft_check_grammar(te) ? printf("OK\n") : printf("KO\n");
-	ft_check_builtin(te);
+// 	// // printf("\t\t%lu\n", ft_block_count(str));
+// 	t_token	**te = ft_tokenize(joined);
+// 	ft_check_grammar(te) ? printf("OK\n") : printf("KO\n");
+// 	ft_check_builtin(te);
 
 
-	i = -1;
-	while (te[++i])
-		printf("%s\n", te[i]->val);
+// 	i = -1;
+// 	while (te[++i])
+// 		printf("%s\n", te[i]->val);
 
-	i = 0;
-	while (tabo[i])
-		free(tabo[i++]->val);
-	i = 0;
-	while (te[i])
-		free(te[i++]->val);
+// 	i = 0;
+// 	while (tabo[i])
+// 		free(tabo[i++]->val);
+// 	i = 0;
+// 	while (te[i])
+// 		free(te[i++]->val);
 
-	ft_lstdel_all(data->env);
-	free(data);
-	ft_free((void **)joined);
-	ft_free((void **)te);
-	ft_free((void **)tabo);
-	ft_free((void **)tab);
+// 	ft_lstdel_all(data->env);
+// 	free(data);
+// 	ft_free((void **)joined);
+// 	ft_free((void **)te);
+// 	ft_free((void **)tabo);
+// 	ft_free((void **)tab);
 	
-	return 0;
-}
+// 	return 0;
+// }

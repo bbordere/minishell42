@@ -39,6 +39,11 @@ typedef struct s_token
 	int		type;
 }	t_token;
 
+
+typedef struct s_data{
+	t_list **env;
+}	t_data;
+
 int	ft_isspecchar(int c);
 int	ft_issep(int c);
 int	ft_ispar(int c);
