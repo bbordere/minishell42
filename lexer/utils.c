@@ -14,7 +14,7 @@
 
 int	ft_isspecchar(int c)
 {
-	return (c == '<' || c == '>' || c == '|' || c == '&');
+	return (c == '<' || c == '>' || c == '|');
 }
 
 int	ft_issep(int c)

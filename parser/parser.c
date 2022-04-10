@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 14:46:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/05 10:25:28 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/09 23:48:11 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int		ft_isop(int type)
 {
-	return (type == R_IN || type == R_OUT || type == R_APPEND
+	return (type == R_OUT || type == R_APPEND
 		|| type == PIPE || type == D_AND || type == D_PIPE);
 }
 
@@ -32,15 +32,15 @@ int	ft_check_op(t_token **tokens, size_t	i)
 {
 	if (i == 0 || i == ft_tab_size(tokens) - 1)
 		return (0);
-	return ((tokens[i - 1]->type == WORD || tokens[i - 1]->type == ARGS || tokens[i - 1]->type == VAR)
-		&& (tokens[i + 1]->type == WORD || tokens[i + 1]->type == ARGS || tokens[i + 1]->type == VAR));
+	return ((tokens[i - 1]->type == WORD || tokens[i - 1]->type == ARGS || tokens[i - 1]->type == VAR || tokens[i - 1]->type == T_FILE)
+		&& (tokens[i + 1]->type == WORD || tokens[i + 1]->type == ARGS || tokens[i + 1]->type == VAR || tokens[i + 1]->type == T_FILE));
 }
 
 int	ft_check_here_doc(t_token **tokens, size_t i)
 {
 	if (i == ft_tab_size(tokens) - 1)
 		return (0);
-	return (tokens[i + 1]->type == WORD || tokens[i + 1]->type == VAR);
+	return (tokens[i + 1]->type == WORD || tokens[i + 1]->type == VAR || tokens[i + 1]->type == T_FILE);
 }
 
 int	ft_check_grammar(t_token **tokens)
@@ -56,7 +56,7 @@ int	ft_check_grammar(t_token **tokens)
 	{
 		if (ft_isop(tokens[i]->type))
 			res = ft_check_op(tokens, i);
-		else if (tokens[i]->type == R_HERE_DOC)
+		else if (tokens[i]->type == R_HERE_DOC || tokens[i]->type == R_IN)
 			res = ft_check_here_doc(tokens, i);
 		i++;
 		if (!res)

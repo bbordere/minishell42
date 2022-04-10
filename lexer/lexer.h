@@ -30,7 +30,8 @@ enum	e_type
 	R_OUT = 13,
 	R_APPEND = 14,
 	T_NULL = 15,
-	WILDCARD = 16
+	WILDCARD = 16,
+	T_FILE = 17
 };
 
 typedef struct s_token
