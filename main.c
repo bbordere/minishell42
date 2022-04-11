@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/10 22:58:04 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/11 16:42:29 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,50 +52,114 @@ void	ft_lstprint(t_list *lst)
 	printf("NULL\n");
 }
 
-char	**ft_pipelines(t_list *pipes)
-{
-	size_t	j;
-	char	**res;
-	t_list	*start;
-	char	**temp;
+// char	**ft_pipelines(t_list *pipes)
+// {
+// 	size_t	j;
+// 	char	**res;
+// 	t_list	*start;
+// 	char	**temp;
 
-	start = pipes;
-	temp = NULL;
-	res = malloc(sizeof(char *) * (ft_lstsize(pipes) + 3));
+// 	start = pipes;
+// 	temp = NULL;
+// 	res = malloc(sizeof(char *) * (ft_lstsize(pipes) + 3));
+// 	if (!res)
+// 		return (NULL);
+// 	j = 0;
+// 	if (((t_token *)pipes->content)->type != T_FILE)
+// 		res[j++] = ft_strdup("0");
+// 	else
+// 	{
+// 		temp = ft_split(((t_token *)pipes->content)->val, ' ');
+// 		if (!temp)
+// 			return (NULL); // FREE RES
+// 		res[j++] = ft_strdup(temp[0]);
+// 		res[j++] = ft_strdup(((t_token *)pipes->content)->val + ft_strlen(temp[0]) + 1);
+// 		(((t_token *)pipes->content)->type) = WORD;
+// 		if (pipes->next)
+// 			pipes = pipes->next;
+// 	}
+// 	while (pipes->next)
+// 	{
+// 		res[j++] = ft_strdup(((t_token *)pipes->content)->val); // SECU
+// 		pipes = pipes->next;
+// 	}
+// 	if (!pipes->next && ((t_token *)pipes->content)->type != T_FILE)
+// 	{
+// 		if (pipes != start)
+// 			res[j++] = ft_strdup(((t_token *)pipes->content)->val);
+// 		res[j++] = ft_strdup("1");
+// 	}
+// 	else if (!pipes->next && ((t_token *)pipes->content)->type == T_FILE)
+// 	{
+// 		res[j++] = ft_strdup(((t_token *)pipes->content)->val);
+// 	}
+// 	res[j] = NULL;
+// 	if (temp)
+// 		ft_free((void **)temp);
+// 	return (res);
+// }
+
+void	ft_del_first_pipe(t_list **lst)
+{
+	t_list	*temp;
+	
+	temp = *lst;
+	*lst = temp->next;
+	free(((t_token *)temp->content)->val);
+	free(temp->content);
+	free(temp);
+}
+
+void	*ft_update_pipeline(t_list **pipeline)
+{
+	size_t	i;
+	t_list	*temp;
+	char	**split;
+	char	*val;
+
+	temp = *pipeline;
+	if (((t_token *)temp->content)->type != T_FILE)
+		ft_lstadd_front(pipeline, ft_lstnew(ft_init_token("0")));
+	if (((t_token *)temp->content)->type == T_FILE)
+	{
+		((t_token *)temp->content)->type = WORD;
+		split = ft_split(((t_token *)temp->content)->val, ' ');
+		if (!split)
+			return (NULL); //SECU
+		val = ft_strdup(((t_token *)temp->content)->val);
+		if (!val)
+			return (ft_free((void **)split), NULL);
+		ft_del_first_pipe(pipeline);
+		ft_lstadd_front(pipeline, ft_lstnew(ft_init_token(val + ft_strlen(split[0]) + 1)));
+		ft_lstadd_front(pipeline, ft_lstnew(ft_init_token(split[0])));
+		ft_free((void **)split);
+		free(val);
+	}
+	temp = *pipeline;
+	while (temp->next)
+		temp = temp->next;	
+	if (((t_token *)temp->content)->type != T_FILE)
+		ft_lstadd_back(pipeline, ft_lstnew(ft_init_token("1")));
+}
+
+char	**ft_lst_to_tab(t_list	*lst)
+{
+	char	**res;
+	size_t	i;
+
+	res = malloc(sizeof(char *) * (ft_lstsize(lst) + 1));
 	if (!res)
 		return (NULL);
-	j = 0;
-	if (((t_token *)pipes->content)->type != T_FILE)
-		res[j++] = ft_strdup("0");
-	else
+	i = 0;
+	while (lst)
 	{
-		temp = ft_split(((t_token *)pipes->content)->val, ' ');
-		if (!temp)
-			return (NULL); // FREE RES
-		res[j++] = ft_strdup(temp[0]);
-		res[j++] = ft_strdup(((t_token *)pipes->content)->val + ft_strlen(temp[0]) + 1);
-		(((t_token *)pipes->content)->type) = WORD;
-		if (pipes->next)
-			pipes = pipes->next;
+		res[i] = ft_strdup(((t_token *)lst->content)->val);
+		if (!res[i])
+			return (NULL); // FREE ALL
+		i++;
+		lst = lst->next;
 	}
-	while (pipes->next)
-	{
-		res[j++] = ft_strdup(((t_token *)pipes->content)->val); // SECU
-		pipes = pipes->next;
-	}
-	if (!pipes->next && ((t_token *)pipes->content)->type != T_FILE)
-	{
-		if (pipes != start)
-			res[j++] = ft_strdup(((t_token *)pipes->content)->val);
-		res[j++] = ft_strdup("1");
-	}
-	else if (!pipes->next && ((t_token *)pipes->content)->type == T_FILE)
-	{
-		res[j++] = ft_strdup(((t_token *)pipes->content)->val);
-	}
-	res[j] = NULL;
-	if (temp)
-		ft_free((void **)temp);
+	res[i] = NULL;
 	return (res);
 }
 
@@ -155,6 +219,7 @@ int main(int ac, char **av, char **env)
 			joined = ft_join(tokens);
 			final = ft_tokenize(joined);
 			ft_expand(final, data->env);
+			ft_check_builtin(final);
 			pipes = ft_get_pipelines(final);
 			ft_free((void **)tab);
 			ft_free((void **)joined);
@@ -165,14 +230,16 @@ int main(int ac, char **av, char **env)
 
 			while(pipes[z])
 			{
-				piped = ft_pipelines(pipes[z]);
-				ft_free_pipeline(pipes[z]);
+				// piped = ft_pipelines(pipes[z]);
+				ft_update_pipeline(&pipes[z]);
+				piped = ft_lst_to_tab(pipes[z]);
 				int y = 0;
 				printf("****************************\n");
 				while (piped[y])
 					printf("~%s~\n", piped[y++]);
-				z++;
 				printf("****************************\n");
+				ft_free_pipeline(pipes[z]);
+				z++;
 				ft_free((void **)piped);
 			}
 			free(pipes);
