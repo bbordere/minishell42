@@ -31,7 +31,9 @@ enum	e_type
 	R_APPEND = 14,
 	T_NULL = 15,
 	WILDCARD = 16,
-	T_FILE = 17
+	T_FILE = 17,
+	D_QUOTE = 18,
+	S_QUOTE = 19
 };
 
 typedef struct s_token

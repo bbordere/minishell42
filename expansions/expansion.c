@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/10 20:05:33 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/12 15:32:29 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,7 +192,7 @@ char	*ft_charjoin(char *str, char c)
 	return (res);
 }
 
-char **ft_fill_str(t_list **env, char *str, size_t *i, size_t *j, char **res)
+char **ft_get_vars(t_list **env, char *str, size_t *i, size_t *j, char **res)
 {
 	char	**vars;
 
@@ -212,10 +212,11 @@ char	*ft_expand_str(t_list **env, char *str)
 	size_t	i;
 	size_t	j;
 
-	vars = ft_fill_str(env, str, &i, &j, &res);
+	vars = ft_get_vars(env, str, &i, &j, &res);
 	if (!vars)
 		return (NULL);
-	while (str[i])
+	i++;
+	while (str[i] && str[i + 1])
 	{
 		if (str[i + 1] && str[i] == '$' && str[i + 1] != '$')
 		{
@@ -234,6 +235,22 @@ char	*ft_expand_str(t_list **env, char *str)
 	return (res);
 }
 
+char	*ft_get_str(char *str)
+{
+	size_t	i;
+	char	*res;
+
+	res = NULL;
+	i = 1;
+	while (str[i + 1])
+	{
+		if (str[i] != str[0])
+			res = ft_charjoin(res, str[i]);
+		i++;
+	}
+	return (res);
+}
+
 void	ft_expand(t_token **tokens, t_list **env)
 {
 	size_t	i;
@@ -241,8 +258,16 @@ void	ft_expand(t_token **tokens, t_list **env)
 	i = 0;
 	while (tokens[i])
 	{
-		if (tokens[i]->type == VAR || tokens[i]->type == ARGS)
+		if (tokens[i]->type == VAR || tokens[i]->type == D_QUOTE)
+		{
 			tokens[i]->val = ft_expand_str(env, tokens[i]->val);
+			tokens[i]->type = WORD;
+		}
+		else if (tokens[i]->type == S_QUOTE)
+		{
+			tokens[i]->val = ft_get_str(tokens[i]->val);
+			tokens[i]->type = WORD;
+		}
 		if (i != 0 && tokens[i - 1] && (tokens[i - 1]->type == R_OUT || tokens[i - 1]->type == R_IN || tokens[i - 1]->type == R_APPEND))
 			tokens[i]->type = T_FILE;
 		i++;

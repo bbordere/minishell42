@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/11 16:42:29 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/12 15:26:38 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ void	*ft_update_pipeline(t_list **pipeline)
 {
 	size_t	i;
 	t_list	*temp;
-	char	**split;
+	char	**split; 
 	char	*val;
 
 	temp = *pipeline;
@@ -204,45 +204,52 @@ int main(int ac, char **av, char **env)
 		final = NULL;
 		joined = NULL;
 
-		// input = readline("minishell > ");
+		input = readline("minishell > ");
 		// input = ft_strdup("cat|cat");
-		ft_putstr_fd("Prompt > ", 0);
-		input = get_next_line(0);
+		// ft_putstr_fd("Prompt > ", 0);
+		// input = get_next_line(0);
 		if (!input)
 			break ;
 		if (ft_strncmp(input, "\n", ft_strlen(input)))
 		{
-			// add_history(input);
+			add_history(input);
 			tab = ft_lexer(input);
 			tokens = ft_tokenize(tab);
 			ft_expand(tokens, data->env);
 			joined = ft_join(tokens);
 			final = ft_tokenize(joined);
-			ft_expand(final, data->env);
-			ft_check_builtin(final);
-			pipes = ft_get_pipelines(final);
-			ft_free((void **)tab);
-			ft_free((void **)joined);
-			ft_free_tokens(tokens);
-			ft_free_tokens(final);
-			int z = 0;
-			char **piped;
-
-			while(pipes[z])
+			// ft_expand(final, data->env);
+			// ft_check_builtin(final);
+			// pipes = ft_get_pipelines(final);
+			int o = 0;
+			while (tokens[o])
 			{
-				// piped = ft_pipelines(pipes[z]);
-				ft_update_pipeline(&pipes[z]);
-				piped = ft_lst_to_tab(pipes[z]);
-				int y = 0;
-				printf("****************************\n");
-				while (piped[y])
-					printf("~%s~\n", piped[y++]);
-				printf("****************************\n");
-				ft_free_pipeline(pipes[z]);
-				z++;
-				ft_free((void **)piped);
+				printf("output : %s %d\n", tokens[o]->val, tokens[o]->type);
+				o++;
 			}
-			free(pipes);
+			
+			// ft_free((void **)tab);
+			// ft_free((void **)joined);
+			// ft_free_tokens(tokens);
+			// ft_free_tokens(final);
+			// int z = 0;
+			// char **piped;
+
+			// while(pipes[z])
+			// {
+			// 	// piped = ft_pipelines(pipes[z]);
+			// 	ft_update_pipeline(&pipes[z]);
+			// 	piped = ft_lst_to_tab(pipes[z]);
+			// 	int y = 0;
+			// 	printf("****************************\n");
+			// 	while (piped[y])
+			// 		printf("~%s~\n", piped[y++]);
+			// 	printf("****************************\n");
+			// 	ft_free_pipeline(pipes[z]);
+			// 	z++;
+			// 	ft_free((void **)piped);
+			// }
+			// free(pipes);
 		}
 		free(input);
 	}
