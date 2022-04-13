@@ -12,15 +12,18 @@
 
 #include "lexer.h"
 
-void	ft_count_word_sep(char *str, size_t *i, size_t *nb)
+void	ft_count_word_sep(char *str, size_t *i, int mode)
 {
 	char	sep;
 // 
-	sep = str[*i];
-	(*i)++;
-	while (str[*i] && str[*i] != sep)
+	if (mode == 1)
+	{
+		sep = str[*i];
 		(*i)++;
-	(*i)++;
+		while (str[*i] && str[*i] != sep)
+			(*i)++;
+		(*i)++;
+	}
 	if (str[*i] && !ft_issep(str[*i]))
 	{
 		while (str[*i] && !ft_isspace(str[*i]) && !ft_isspecchar(str[*i]) && !ft_issep(str[*i])
@@ -28,7 +31,7 @@ void	ft_count_word_sep(char *str, size_t *i, size_t *nb)
 			(*i)++;
 	}
 	if (str[*i] && ft_issep(str[*i]))
-		ft_count_word_sep(str, i, nb);
+		ft_count_word_sep(str, i, 0);
 	// (*nb)++;
 	// (*i)++;
 
@@ -76,9 +79,24 @@ void	ft_count_word_spec(char *str, size_t *i, size_t *nb)
 
 void	ft_count_word(char *str, size_t *i, size_t *nb)
 {
+	char sep;
+
 	while (str[*i] && !ft_isspace(str[*i]) && !ft_isspecchar(str[*i])
 		&& !ft_ispar(str[*i]) && !(str[*i] == '&' && str[(*i) + 1] == '&'))
-		(*i)++;
+	{
+		if (ft_issep(str[*i]))
+		{
+			sep = str[*i];
+			(*i)++;
+			while (str[*i] && str[*i] != sep)
+				(*i)++;
+			(*i)++;
+			if (ft_isspace(str[*i]))
+				break ;
+		}
+		else
+			(*i)++;
+	}
 	(*nb)++;
 }
 
@@ -113,11 +131,11 @@ size_t	ft_block_count(char *str)
 			nb++;
 			i++;
 		}
-		else if (str[i] && ft_issep(str[i]))
-		{
-			ft_count_word_sep(str, &i, &nb);
-			nb++;
-		}
+		// else if (str[i] && ft_issep(str[i]))
+		// {
+		// 	ft_count_word_sep(str, &i, 1);
+		// 	nb++;
+		// }
 		else if (str[i] && ft_isspecchar(str[i]))
 			ft_count_word_spec(str, &i, &nb);
 		else if (str[i])

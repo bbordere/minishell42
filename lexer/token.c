@@ -25,17 +25,17 @@ int	ft_isfulldollar(char *str)
 
 int	ft_init_op(t_token *token, char *val)
 {
-	if (!ft_strncmp(val, "<", ft_strlen(val)))
+	if (!ft_strncmp(val, "<", ft_strlen(val)) && ft_strlen(val) == 1)
 		token->type = R_IN;
-	else if (!ft_strncmp(val, "<<", ft_strlen(val)))
+	else if (!ft_strncmp(val, "<<", ft_strlen(val)) && ft_strlen(val) == 1)
 		token->type = R_HERE_DOC;
-	else if (!ft_strncmp(val, ">", ft_strlen(val)))
+	else if (!ft_strncmp(val, ">", ft_strlen(val)) && ft_strlen(val) == 1)
 		token->type = R_OUT;
-	else if (!ft_strncmp(val, ">>", ft_strlen(val)))
+	else if (!ft_strncmp(val, ">>", ft_strlen(val)) && ft_strlen(val) == 1)
 		token->type = R_APPEND;
 	else if (!ft_strncmp(val, "&", ft_strlen(val)))
 		token->type = WORD;
-	else if (!ft_strncmp(val, "&&", ft_strlen(val)))
+	else if (!ft_strncmp(val, "&&", ft_strlen(val)) && ft_strlen(val) == 2)
 		token->type = D_AND;
 	else if (ft_strnstr(val, "*", ft_strlen(val)) && !ft_issep(*val))
 		token->type = WILDCARD;

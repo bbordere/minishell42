@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/13 15:43:43 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/14 00:17:37 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,13 +218,12 @@ int main(int ac, char **av, char **env)
 			ft_expand(tokens, data->env);
 			joined = ft_join(tokens);
 			final = ft_tokenize(joined);
-			// ft_expand(final, data->env);
 			// ft_check_builtin(final);
 			// pipes = ft_get_pipelines(final);
 			int o = 0;
-			while (tokens[o])
+			while (final[o])
 			{
-				printf("%s %d\n", tokens[o]->val, tokens[o]->type);
+				printf("%s %d\n", final[o]->val, final[o]->type);
 				o++;
 			}
 			// ft_update_pipeline(pipes);

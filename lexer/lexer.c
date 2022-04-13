@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/13 15:19:53 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/13 22:12:10 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,24 +44,49 @@ size_t	ft_word_size(char *str, size_t i)
 		return (1);
 	else if (ft_isspecchar(str[i]) && ft_isspecchar(str[i + 1]))
 		return (2);
-	else if (ft_issep(str[i]))
-	{
-		sep = str[i];
-		i++;
-		while (str[i + size] && str[i + size] != sep)
-			size++;
-		size += 2;
-		while (str[i + size] && !ft_isspace(str[i + size])
-			&& !ft_isspecchar(str[i + size])
-			&& !ft_ispar(str[i + size]) && !(str[i + size] == '&' && str[i + 1 + size] == '&'))
-				size++;
-		size++;
-	}
+	// else if (ft_issep(str[i]))
+	// {
+	// 	while (str[*i] && !ft_isspace(str[*i]) && !ft_isspecchar(str[*i])
+	// 		&& !ft_ispar(str[*i]) && !(str[*i] == '&' && str[(*i) + 1] == '&'))
+	// 	{
+	// 		sep = str[i + size];
+	// 		size++;
+	// 		while (str[i + size] && str[i + size] != sep)
+	// 			size++;
+	// 	}
+	// 	// sep = str[i];
+	// 	// i++;
+	// 	// while (str[i + size] && str[i + size] != sep)
+	// 	// 	size++;
+	// 	// size += 2;
+	// 	// while (str[i + size] && !ft_isspace(str[i + size])
+	// 	// 	&& !ft_isspecchar(str[i + size])
+	// 	// 	&& !ft_ispar(str[i + size]) && !(str[i + size] == '&' && str[i + 1 + size] == '&'))
+	// 	// 		size++;
+	// 	// size++;
+		
+	// }
 	else
+	{
 		while (str[i + size] && !ft_isspace(str[i + size])
 			&& !ft_isspecchar(str[i + size])
 			&& !ft_ispar(str[i + size]) && !(str[i + size] == '&' && str[i + 1 + size] == '&'))
+		{
+			if (ft_issep(str[i + size]))
+			{
+				sep = str[i + size];
 				size++;
+				while(str[i + size] && str[i + size] != sep && !ft_isspecchar(str[i + size]))
+				{
+					size++;
+				}
+				if (ft_isspace(str[i + size]))
+					break ;
+			}
+			else
+				size++;
+		}
+	}
 	return (size);
 }
 
@@ -105,7 +130,6 @@ char	**ft_lexer(char *str)
 	i = 0;
 	j = 0;
 	nb = ft_block_count(str);
-	printf("**-%lu-**\n", nb);
 	res = malloc((nb + 1) * sizeof(char *));
 	if (!res)
 		return (NULL);

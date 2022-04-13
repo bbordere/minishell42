@@ -51,7 +51,7 @@ int	ft_isspecchar(int c);
 int	ft_issep(int c);
 int	ft_ispar(int c);
 void	ft_skip_spaces(char *str, size_t *i);
-void	ft_count_word_sep(char *str, size_t *i, size_t *nb);
+void	ft_count_word_sep(char *str, size_t *i, int mode);
 void	ft_count_word_spec(char *str, size_t *i, size_t *nb);
 void	ft_count_word(char *str, size_t *i, size_t *nb);
 size_t	ft_block_count(char *str);

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/13 15:13:15 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/14 00:23:51 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -232,7 +232,8 @@ char	*ft_expand_str(t_list **env, char *str)
 	vars = ft_get_vars(env, str, &i, &j, &res);
 	if (!vars)
 		return (NULL);
-	temp = ft_strtrim(str, "\"");
+	// temp = ft_strtrim(str, "\"");
+	temp = ft_strdup(str);
 	free(str);
 	while (temp[i])
 	{
@@ -246,7 +247,24 @@ char	*ft_expand_str(t_list **env, char *str)
 			i++;
 		}
 		else if (temp[i] == '\"')
+		{
 			i++;
+			while (temp[i] && temp[i] != '\"')
+			{
+				if (temp[i + 1] && temp[i] == '$' && temp[i + 1] != '$')
+				{
+					res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
+					while (temp[i + 1] && !ft_isspace(temp[i + 1])
+						&& !ft_isspecchar(temp[i + 1]) && !ft_issep(temp[i + 1])
+						&& temp[i + 1] != '$' && !ft_ispar(temp[i + 1]))
+							i++;
+					i++;					
+				}
+				else
+					res = ft_charjoin(res, temp[i++]);
+			}
+			i++;
+		}
 		else if (temp[i] == '\'')
 		{
 			i++;
@@ -256,7 +274,7 @@ char	*ft_expand_str(t_list **env, char *str)
 		}
 		else
 			res = ft_charjoin(res, temp[i++]);
-	}
+	}	
 	free(vars);
 	free(temp);
 	return (res);
@@ -268,14 +286,9 @@ void	ft_expand(t_token **tokens, t_list **env)
 	i = 0;
 	while (tokens[i])
 	{
-		if (tokens[i]->type == VAR || tokens[i]->type == D_QUOTE)
+		if (tokens[i]->type == VAR || tokens[i]->type == D_QUOTE || tokens[i]->type == S_QUOTE)
 		{
 			tokens[i]->val = ft_expand_str(env, tokens[i]->val);
-			tokens[i]->type = WORD;
-		}
-		else if (tokens[i]->type == S_QUOTE)
-		{
-			tokens[i]->val = ft_get_str(tokens[i]->val);
 			tokens[i]->type = WORD;
 		}
 		if (i != 0 && tokens[i - 1] && (tokens[i - 1]->type == R_OUT || tokens[i - 1]->type == R_IN || tokens[i - 1]->type == R_APPEND))
