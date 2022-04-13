@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:08:45 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/12 13:53:59 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/13 11:20:11 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	ft_islimit(int type)
 {
 	return (type == PIPE || type == D_PIPE || type == D_AND
 		|| type == I_PAR || type == O_PAR || type == R_IN || type == R_OUT
-		|| type == R_HERE_DOC || type == R_APPEND);
+		|| type == R_HERE_DOC || type == R_APPEND || type == T_FILE);
 }
 
 size_t	ft_count_join(t_token **tokens)

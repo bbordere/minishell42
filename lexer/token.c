@@ -61,9 +61,9 @@ t_token	*ft_init_token(char *val)
 		token->type = I_PAR;
 	else if (!ft_strncmp(val, ")", 1))
 		token->type = O_PAR;
-	else if (!ft_strncmp(val, "\"", 1))
+	else if (ft_strnstr(val, "\"", ft_strlen(val)))
 		token->type = D_QUOTE;
-	else if (!ft_strncmp(val, "\'", 1))
+	else if (ft_strnstr(val, "\'", ft_strlen(val)))
 		token->type = S_QUOTE;
 	else if (ft_strnstr(val, "$", ft_strlen(val)) && !ft_isfulldollar(val))
 		token->type = VAR;

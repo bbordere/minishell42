@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/12 15:32:29 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/13 15:13:15 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,36 +205,6 @@ char **ft_get_vars(t_list **env, char *str, size_t *i, size_t *j, char **res)
 	return (vars);
 }
 
-char	*ft_expand_str(t_list **env, char *str)
-{
-	char	**vars;
-	char	*res;
-	size_t	i;
-	size_t	j;
-
-	vars = ft_get_vars(env, str, &i, &j, &res);
-	if (!vars)
-		return (NULL);
-	i++;
-	while (str[i] && str[i + 1])
-	{
-		if (str[i + 1] && str[i] == '$' && str[i + 1] != '$')
-		{
-			res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
-			while (str[i + 1] && !ft_isspace(str[i + 1])
-				&& !ft_isspecchar(str[i + 1]) && !ft_issep(str[i + 1])
-				&& str[i + 1] != '$' && !ft_ispar(str[i + 1]))
-					i++;
-		}
-		else
-			res = ft_charjoin(res, str[i]);
-		i++;
-	}
-	free(str);
-	free(vars);
-	return (res);
-}
-
 char	*ft_get_str(char *str)
 {
 	size_t	i;
@@ -251,6 +221,46 @@ char	*ft_get_str(char *str)
 	return (res);
 }
 
+char	*ft_expand_str(t_list **env, char *str)
+{
+	char	**vars;
+	char	*res;
+	char	*temp;
+	size_t	i;
+	size_t	j;
+
+	vars = ft_get_vars(env, str, &i, &j, &res);
+	if (!vars)
+		return (NULL);
+	temp = ft_strtrim(str, "\"");
+	free(str);
+	while (temp[i])
+	{
+		if (temp[i + 1] && temp[i] == '$' && temp[i + 1] != '$')
+		{
+			res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
+			while (temp[i + 1] && !ft_isspace(temp[i + 1])
+				&& !ft_isspecchar(temp[i + 1]) && !ft_issep(temp[i + 1])
+				&& temp[i + 1] != '$' && !ft_ispar(temp[i + 1]))
+					i++;
+			i++;
+		}
+		else if (temp[i] == '\"')
+			i++;
+		else if (temp[i] == '\'')
+		{
+			i++;
+			while (temp[i] && temp[i] != '\'')
+				res = ft_charjoin(res, temp[i++]);
+			i++;
+		}
+		else
+			res = ft_charjoin(res, temp[i++]);
+	}
+	free(vars);
+	free(temp);
+	return (res);
+}
 void	ft_expand(t_token **tokens, t_list **env)
 {
 	size_t	i;

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/12 15:26:38 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/13 15:43:43 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -224,13 +224,22 @@ int main(int ac, char **av, char **env)
 			int o = 0;
 			while (tokens[o])
 			{
-				printf("output : %s %d\n", tokens[o]->val, tokens[o]->type);
+				printf("%s %d\n", tokens[o]->val, tokens[o]->type);
 				o++;
 			}
+			// ft_update_pipeline(pipes);
+			// while (pipes[o])
+			// {
+			// 	ft_lstprint(pipes[o]);
+			// 	o++;
+			// }
 			
-			// ft_free((void **)tab);
+
+
+			
+			ft_free((void **)tab);
 			// ft_free((void **)joined);
-			// ft_free_tokens(tokens);
+			ft_free_tokens(tokens);
 			// ft_free_tokens(final);
 			// int z = 0;
 			// char **piped;

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/12 15:40:52 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/13 15:19:53 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ size_t	ft_word_size(char *str, size_t i)
 			&& !ft_isspecchar(str[i + size])
 			&& !ft_ispar(str[i + size]) && !(str[i + size] == '&' && str[i + 1 + size] == '&'))
 				size++;
+		size++;
 	}
 	else
 		while (str[i + size] && !ft_isspace(str[i + size])
@@ -104,7 +105,7 @@ char	**ft_lexer(char *str)
 	i = 0;
 	j = 0;
 	nb = ft_block_count(str);
-	printf("/*%lu*/\n", nb);
+	printf("**-%lu-**\n", nb);
 	res = malloc((nb + 1) * sizeof(char *));
 	if (!res)
 		return (NULL);
