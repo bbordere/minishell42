@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/14 00:23:51 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/14 16:35:53 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,7 @@ char	**ft_extract_var(char *str)
 	j = 0;
 	nb = ft_count_var(str);
 	res = malloc(sizeof(char *) * (nb + 1));
+	// res = ft_calloc(nb + 1, sizeof(char *));
 	if (!res)
 		return (NULL);
 	while (str[i])
@@ -150,7 +151,7 @@ char	**ft_extract_var(char *str)
 		}
 		i++;
 	}
-	res[j] = NULL;
+	res[nb] = NULL;
 	return (res);
 }
 
@@ -192,32 +193,20 @@ char	*ft_charjoin(char *str, char c)
 	return (res);
 }
 
-char **ft_get_vars(t_list **env, char *str, size_t *i, size_t *j, char **res)
-{
-	char	**vars;
-
-	vars = ft_extract_var(str);
-	if (!vars)
-		return (NULL);
-	*res = NULL;
-	*i = 0;
-	*j = 0;
-	return (vars);
-}
-
-char	*ft_get_str(char *str)
+char	*ft_get_str(char *str, int mode)
 {
 	size_t	i;
 	char	*res;
 
 	res = NULL;
 	i = 1;
-	while (str[i + 1])
+	while (str[i] && str[i] != '\'')
 	{
-		if (str[i] != str[0])
-			res = ft_charjoin(res, str[i]);
+		res = ft_charjoin(res, str[i]);
 		i++;
 	}
+	if (mode)
+		free(str);
 	return (res);
 }
 
@@ -225,60 +214,67 @@ char	*ft_expand_str(t_list **env, char *str)
 {
 	char	**vars;
 	char	*res;
-	char	*temp;
 	size_t	i;
+	int mode;
 	size_t	j;
 
-	vars = ft_get_vars(env, str, &i, &j, &res);
+	vars = ft_extract_var(str);
 	if (!vars)
 		return (NULL);
-	// temp = ft_strtrim(str, "\"");
-	temp = ft_strdup(str);
-	free(str);
-	while (temp[i])
+	res = NULL;
+	i = 0;
+	j = 0;
+	mode = 0;
+	while (str[i])
 	{
-		if (temp[i + 1] && temp[i] == '$' && temp[i + 1] != '$')
-		{
-			res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
-			while (temp[i + 1] && !ft_isspace(temp[i + 1])
-				&& !ft_isspecchar(temp[i + 1]) && !ft_issep(temp[i + 1])
-				&& temp[i + 1] != '$' && !ft_ispar(temp[i + 1]))
-					i++;
-			i++;
-		}
-		else if (temp[i] == '\"')
+		if (str[i] == '\"')
 		{
 			i++;
-			while (temp[i] && temp[i] != '\"')
+			while (str[i] && str[i] != '\"')
 			{
-				if (temp[i + 1] && temp[i] == '$' && temp[i + 1] != '$')
+				if (str[i + 1] && str[i] == '$' && str[i + 1] != '$')
 				{
 					res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
-					while (temp[i + 1] && !ft_isspace(temp[i + 1])
-						&& !ft_isspecchar(temp[i + 1]) && !ft_issep(temp[i + 1])
-						&& temp[i + 1] != '$' && !ft_ispar(temp[i + 1]))
+					while (str[i + 1] && !ft_isspace(str[i + 1])
+						&& !ft_isspecchar(str[i + 1]) && !ft_issep(str[i + 1])
+						&& str[i + 1] != '$' && !ft_ispar(str[i + 1]))
 							i++;
 					i++;					
 				}
 				else
-					res = ft_charjoin(res, temp[i++]);
+					res = ft_charjoin(res, str[i++]);
 			}
 			i++;
 		}
-		else if (temp[i] == '\'')
+		else if (str[i] == '\'')
 		{
+			mode = 1;
+			res = ft_strjoin2(res, ft_get_str(&str[i], 0));
 			i++;
-			while (temp[i] && temp[i] != '\'')
-				res = ft_charjoin(res, temp[i++]);
+			while(str[i] && str[i] != '\'')
+				i++;
+			i++;
+		}
+		else if (str[i + 1] && str[i] == '$' && str[i + 1] != '$')
+		{
+			res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
+			while (str[i + 1] && !ft_isspace(str[i + 1])
+				&& !ft_isspecchar(str[i + 1]) && !ft_issep(str[i + 1])
+				&& str[i + 1] != '$' && !ft_ispar(str[i + 1]))
+					i++;
 			i++;
 		}
 		else
-			res = ft_charjoin(res, temp[i++]);
-	}	
-	free(vars);
-	free(temp);
+			res = ft_charjoin(res, str[i++]);
+	}
+	if (mode)
+		ft_free(vars);
+	else
+		free(vars);
+	free(str);
 	return (res);
 }
+
 void	ft_expand(t_token **tokens, t_list **env)
 {
 	size_t	i;
@@ -286,13 +282,17 @@ void	ft_expand(t_token **tokens, t_list **env)
 	i = 0;
 	while (tokens[i])
 	{
-		if (tokens[i]->type == VAR || tokens[i]->type == D_QUOTE || tokens[i]->type == S_QUOTE)
+		if (tokens[i]->type == VAR || tokens[i]->type == D_QUOTE
+			|| tokens[i]->type == IN_FILE
+			|| tokens[i]->type == OUT_A_FILE || tokens[i]->type == OUT_FILE)
 		{
 			tokens[i]->val = ft_expand_str(env, tokens[i]->val);
-			tokens[i]->type = WORD;
+			// tokens[i]->type = WORD;
 		}
-		if (i != 0 && tokens[i - 1] && (tokens[i - 1]->type == R_OUT || tokens[i - 1]->type == R_IN || tokens[i - 1]->type == R_APPEND))
-			tokens[i]->type = T_FILE;
+		else if (tokens[i]->type == S_QUOTE)
+		{
+			tokens[i]->val = ft_get_str(tokens[i]->val, 1);
+		}
 		i++;
 	}	
 }

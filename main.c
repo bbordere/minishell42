@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/14 00:17:37 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/14 15:49:40 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,6 +178,29 @@ void	ft_free_pipeline(t_list *pipeline)
 	}	
 }
 
+void	ft_update_type(t_token **tokens)
+{
+	size_t	i;
+
+	i = 0;
+	while (tokens[i])
+	{
+		if (i != 0 && tokens[i - 1])
+		{
+			if (tokens[i - 1]->type == R_OUT)
+				tokens[i]->type = OUT_FILE;
+			else if (tokens[i - 1]->type == R_IN)
+				tokens[i]->type = IN_FILE;
+			else if (tokens[i - 1]->type == R_HERE_DOC)
+				tokens[i]->type = DELIMITER;
+			else if (tokens[i - 1]->type == R_APPEND)
+				tokens[i]->type = OUT_A_FILE;
+		}
+		i++;
+	}
+	
+}
+
 int main(int ac, char **av, char **env)
 {
 	t_data *data;
@@ -204,20 +227,22 @@ int main(int ac, char **av, char **env)
 		final = NULL;
 		joined = NULL;
 
-		input = readline("minishell > ");
+		// input = readline("minishell > ");
 		// input = ft_strdup("cat|cat");
-		// ft_putstr_fd("Prompt > ", 0);
-		// input = get_next_line(0);
+		ft_putstr_fd("Prompt > ", 0);
+		input = get_next_line(0);
 		if (!input)
 			break ;
 		if (ft_strncmp(input, "\n", ft_strlen(input)))
 		{
-			add_history(input);
+			// add_history(input);
 			tab = ft_lexer(input);
 			tokens = ft_tokenize(tab);
+			ft_update_type(tokens);
 			ft_expand(tokens, data->env);
 			joined = ft_join(tokens);
 			final = ft_tokenize(joined);
+			ft_update_type(final);
 			// ft_check_builtin(final);
 			// pipes = ft_get_pipelines(final);
 			int o = 0;
@@ -225,21 +250,11 @@ int main(int ac, char **av, char **env)
 			{
 				printf("%s %d\n", final[o]->val, final[o]->type);
 				o++;
-			}
-			// ft_update_pipeline(pipes);
-			// while (pipes[o])
-			// {
-			// 	ft_lstprint(pipes[o]);
-			// 	o++;
-			// }
-			
-
-
-			
+			}			
 			ft_free((void **)tab);
-			// ft_free((void **)joined);
+			ft_free((void **)joined);
 			ft_free_tokens(tokens);
-			// ft_free_tokens(final);
+			ft_free_tokens(final);
 			// int z = 0;
 			// char **piped;
 

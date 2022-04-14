@@ -33,7 +33,11 @@ enum	e_type
 	WILDCARD = 16,
 	T_FILE = 17,
 	D_QUOTE = 18,
-	S_QUOTE = 19
+	S_QUOTE = 19,
+	IN_FILE = 20,
+	OUT_FILE = 21,
+	DELIMITER = 22,
+	OUT_A_FILE = 23
 };
 
 typedef struct s_token

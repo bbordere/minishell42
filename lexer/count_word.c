@@ -15,7 +15,7 @@
 void	ft_count_word_sep(char *str, size_t *i, int mode)
 {
 	char	sep;
-// 
+
 	if (mode == 1)
 	{
 		sep = str[*i];
@@ -26,40 +26,13 @@ void	ft_count_word_sep(char *str, size_t *i, int mode)
 	}
 	if (str[*i] && !ft_issep(str[*i]))
 	{
-		while (str[*i] && !ft_isspace(str[*i]) && !ft_isspecchar(str[*i]) && !ft_issep(str[*i])
-			&& !ft_ispar(str[*i]) && !(str[*i] == '&' && str[(*i) + 1] == '&')) 
+		while (str[*i] && !ft_isspace(str[*i])
+			&& !ft_isspecchar(str[*i]) && !ft_issep(str[*i])
+			&& !ft_ispar(str[*i]) && !(str[*i] == '&' && str[(*i) + 1] == '&'))
 			(*i)++;
 	}
 	if (str[*i] && ft_issep(str[*i]))
 		ft_count_word_sep(str, i, 0);
-	// (*nb)++;
-	// (*i)++;
-
-	// if (str[*i] && !ft_issep(str[*i]))
-
-	// {
-
-		// while (str[*i] && !ft_isspace(str[*i]) && !ft_isspecchar(str[*i]) && !ft_issep(str[*i])
-
-			// && !ft_ispar(str[*i]) && !(str[*i] == '&' && str[(*i) + 1] == '&'))
-
-			// (*i)++;
-
-	// }
-
-	// if (str[*i] && ft_issep(str[*i]))
-
-	// {
-
-		// sep = str[*i];
-
-		// (*i)++;
-
-		// while (str[*i] && str[*i] != sep)
-
-			// (*i)++;
-
-	// }
 }
 
 void	ft_count_word_spec(char *str, size_t *i, size_t *nb)
@@ -79,7 +52,7 @@ void	ft_count_word_spec(char *str, size_t *i, size_t *nb)
 
 void	ft_count_word(char *str, size_t *i, size_t *nb)
 {
-	char sep;
+	char	sep;
 
 	while (str[*i] && !ft_isspace(str[*i]) && !ft_isspecchar(str[*i])
 		&& !ft_ispar(str[*i]) && !(str[*i] == '&' && str[(*i) + 1] == '&'))
@@ -104,9 +77,10 @@ void	ft_count_var(char *str, size_t *i, size_t *nb)
 {
 	(*i)++;
 	while (str[*i] && !ft_isspace(str[*i]) && !ft_isspecchar(str[*i])
-		&& !ft_issep(str[*i]) && !ft_ispar(str[*i]) && !(str[*i] == '&' && str[(*i) + 1] == '&'))
+		&& !ft_issep(str[*i]) && !ft_ispar(str[*i])
+		&& !(str[*i] == '&' && str[(*i) + 1] == '&'))
 		(*i)++;
-	(*nb)++;
+	ft_count_word(str, i, nb);
 }
 
 size_t	ft_block_count(char *str)
@@ -119,23 +93,16 @@ size_t	ft_block_count(char *str)
 	while (str[i])
 	{
 		ft_skip_spaces(str, &i);
-		if (str[i] ==  '&' && str[i + 1] == '&')
+		if ((str[i] == '&' && str[i + 1] == '&')
+			|| (str[i] && ft_ispar(str[i])))
 		{
-			i += 2;
+			i = i + 1 + !(str[i] && ft_ispar(str[i]));
 			nb++;
 		}
-		else if (str[i] == '$' || (str[i] == '&' && str[i + 1] != '&' && !ft_issep(str[i + 1]) && !ft_isspace(str[i + 1]) && !ft_isspecchar(str[i + 1]) && !ft_ispar(str[i + 1])))
+		else if (str[i] == '$' || (str[i] == '&' && str[i + 1] != '&'
+				&& !ft_issep(str[i + 1]) && !ft_isspace(str[i + 1])
+				&& !ft_isspecchar(str[i + 1]) && !ft_ispar(str[i + 1])))
 			ft_count_var(str, &i, &nb);
-		else if (str[i] && ft_ispar(str[i]))
-		{
-			nb++;
-			i++;
-		}
-		// else if (str[i] && ft_issep(str[i]))
-		// {
-		// 	ft_count_word_sep(str, &i, 1);
-		// 	nb++;
-		// }
 		else if (str[i] && ft_isspecchar(str[i]))
 			ft_count_word_spec(str, &i, &nb);
 		else if (str[i])

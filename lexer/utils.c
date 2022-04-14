@@ -38,8 +38,14 @@ void	ft_free(void **tab)
 	int	i;
 
 	i = -1;
+	if (!*tab)
+	{
+		free(tab);
+		return ;
+	}
 	while (tab[++i])
-		free(tab[i]);
+		if (tab[i])
+			free(tab[i]);
 	free(tab);
 	tab = NULL;
 }
