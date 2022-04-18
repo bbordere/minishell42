@@ -12,9 +12,11 @@
 
 CC = gcc
 
-CFLAGS = -g3 -lrealine -Ofast libft/libft.a
+# CFLAGS = -g3 -lrealine -Ofast libft/libft.a
 
-FILES =  $(wildcard lexer/*.c) parser/parser.c expansions/expansions.c pipe/pipe.c
+CFLAGS = -Werror
+
+FILES =  $(wildcard lexer/*.c) parser/parser.c expansions/expansion.c pipe/pipe.c main.c
 
 OBJS = $(FILES:.c=.o)
 
@@ -25,18 +27,21 @@ OBJS = $(FILES:.c=.o)
 NAME = minishell
 
 $(NAME): $(OBJS)
+	@ $(MAKE) -C libft all --no-print-directory
 	@ printf '\n\033[0;33mCompiling minishell\033[0m\n'
-	@ $(CC) $(CFLAGS) $(OBJS) -o $(NAME) 
+	@ $(CC) $(CFLAGS) $(OBJS) -o $(NAME) -g3 -lreadline -Ofast libft/libft.a
 	@ printf '\033[0;32mminishell compiled sucessfully !\033[0m\n'
 
 all: $(NAME)
 
 clean:
 	@ rm -f $(OBJS)
+	@ $(MAKE) -C libft clean --no-print-directory
 	@ printf '\033[0;32mclean done\033[0m\n'
 
 fclean: clean
 	@ rm -f $(NAME)
+	@ $(MAKE) -C libft fclean --no-print-directory
 	@ printf '\033[0;32mfclean done\033[0m\n'
 
 re: fclean all
