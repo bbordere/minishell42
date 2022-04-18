@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 14:46:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/12 14:16:59 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/18 19:46:20 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,39 +28,80 @@ size_t	ft_tab_size(t_token	**tokens)
 	return (len);	
 }
 
+int	ft_isvalidtype(int type)
+{
+	return (type == S_QUOTE || type == D_QUOTE || type == WORD || type == ARGS
+	|| type == VAR || type == OUT_FILE || type == OUT_A_FILE);
+}
+
 int	ft_check_op(t_token **tokens, size_t	i)
 {
 	if (i == 0 || i == ft_tab_size(tokens) - 1)
 		return (0);
-	return ((tokens[i - 1]->type == WORD || tokens[i - 1]->type == ARGS || tokens[i - 1]->type == VAR || tokens[i - 1]->type == T_FILE)
-		&& (tokens[i + 1]->type == WORD || tokens[i + 1]->type == ARGS || tokens[i + 1]->type == VAR || tokens[i + 1]->type == T_FILE));
+	else if (tokens[i]->type == R_OUT)
+		return (ft_isvalidtype(tokens[i - 1]->type) && ft_isvalidtype(tokens[i + 1]->type));
+	else if (tokens[i]->type == R_APPEND)
+		return (ft_isvalidtype(tokens[i + 1]->type));
+	
 }
 
 int	ft_check_here_doc(t_token **tokens, size_t i)
 {
 	if (i == ft_tab_size(tokens) - 1)
 		return (0);
-	return (tokens[i + 1]->type == WORD || tokens[i + 1]->type == VAR || tokens[i + 1]->type == T_FILE);
+	return (tokens[i + 1]->type == WORD || tokens[i + 1]->type == VAR
+	|| tokens[i + 1]->type == IN_FILE || tokens[i + 1]->type == DELIMITER || !tokens[i + 1]);
+}
+
+int	ft_check_quotes(t_token	*token)
+{
+	size_t	i;
+	char	sep;
+	int		quote;
+	
+	i = 0;
+	quote = 0;
+	while (token->val[i] && !ft_issep(token->val[i]))
+			i++;
+	while (token->val[i])
+	{
+		if (token->val[i] && ft_issep(token->val[i]))
+		{
+			quote = 1;
+			sep = token->val[i++];
+			while (token->val[i] && token->val[i] != sep)
+				i++;
+			if (token->val[i] == sep)
+			{
+				quote = 0;
+				i++;
+			}
+			if (!token->val[i] && quote)
+				return (0);
+		}
+		else
+			i++;
+	}
+	return (1);
 }
 
 int	ft_check_grammar(t_token **tokens)
 {
 	size_t	i;
-	int		res;
 
-	if (ft_tab_size(tokens) == 1)
-		return (1);
 	i = 0;
-	res = 1;
 	while (tokens[i])
 	{
 		if (ft_isop(tokens[i]->type))
-			res = ft_check_op(tokens, i);
-		else if (tokens[i]->type == R_HERE_DOC || tokens[i]->type == R_IN)
-			res = ft_check_here_doc(tokens, i);
+			if (!ft_check_op(tokens, i))
+				return (printf("minishell: syntax error near unexpected token '%s'\n", tokens[i]->val), 0);
+		if (tokens[i]->type == R_HERE_DOC || tokens[i]->type == R_IN)
+			if (!ft_check_here_doc(tokens, i))
+				return (printf("minishell: syntax error near unexpected token '%s'\n", tokens[i]->val), 0);
+		if (tokens[i]->type == S_QUOTE || tokens[i]->type == D_QUOTE)
+			if (!ft_check_quotes(tokens[i]))
+				return (printf("minishell: unexpected EOF while looking for matching quotes\n"), 0);
 		i++;
-		if (!res)
-			return (0);
 	}
 	return (1);
 }
@@ -71,7 +112,11 @@ int	ft_isbuiltin(char *val)
 
 	tab = ft_lexer(val);
 	if (!tab || !*tab)
+	{
+		if (tab)
+			free(tab);
 		return (0);
+	}
 	if (ft_strnstr(tab[0], "echo", ft_strlen(tab[0]))
 		|| ft_strnstr(tab[0], "cd", ft_strlen(tab[0]))
 		|| ft_strnstr(tab[0], "pwd", ft_strlen(tab[0]))

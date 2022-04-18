@@ -18,8 +18,11 @@ int	ft_isfulldollar(char *str)
 
 	i = 0;
 	while (str[i])
-		if (str[i++] != '$')
+	{
+		if (str[i] != '$' && !ft_issep(str[i]))
 			return (0);
+		i++;
+	}
 	return (1);	
 }
 

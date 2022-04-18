@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/14 16:35:53 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/18 19:36:13 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ t_data	*ft_init_data(char **envp)
 
 void	*ft_return_dup(char *str, char *dup)
 {
-	free(str - 1);
 	if (!dup)
 		return (NULL);
 	return  (ft_strdup(dup));
@@ -66,7 +65,6 @@ void	*ft_expand_return_code(char *str)
 	char	*res;
 
 	res = ft_strjoin2(ft_strdup("{RETURN CODE}"), ft_strdup(&str[1]));
-	free(str - 1);
 	return (res);
 }
 
@@ -139,7 +137,6 @@ char	**ft_extract_var(char *str)
 	j = 0;
 	nb = ft_count_var(str);
 	res = malloc(sizeof(char *) * (nb + 1));
-	// res = ft_calloc(nb + 1, sizeof(char *));
 	if (!res)
 		return (NULL);
 	while (str[i])
@@ -232,14 +229,14 @@ char	*ft_expand_str(t_list **env, char *str)
 			i++;
 			while (str[i] && str[i] != '\"')
 			{
-				if (str[i + 1] && str[i] == '$' && str[i + 1] != '$')
+				if (str[i + 1] && str[i] == '$' && str[i + 1] != '$' && !ft_issep(str[i + 1]))
 				{
 					res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
 					while (str[i + 1] && !ft_isspace(str[i + 1])
 						&& !ft_isspecchar(str[i + 1]) && !ft_issep(str[i + 1])
 						&& str[i + 1] != '$' && !ft_ispar(str[i + 1]))
 							i++;
-					i++;					
+					i++;
 				}
 				else
 					res = ft_charjoin(res, str[i++]);
@@ -255,7 +252,7 @@ char	*ft_expand_str(t_list **env, char *str)
 				i++;
 			i++;
 		}
-		else if (str[i + 1] && str[i] == '$' && str[i + 1] != '$')
+		else if (str[i + 1] && str[i] == '$' && str[i + 1] != '$' && !ft_issep(str[i + 1]))
 		{
 			res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
 			while (str[i + 1] && !ft_isspace(str[i + 1])
@@ -267,10 +264,7 @@ char	*ft_expand_str(t_list **env, char *str)
 		else
 			res = ft_charjoin(res, str[i++]);
 	}
-	if (mode)
-		ft_free(vars);
-	else
-		free(vars);
+	ft_free((void **)vars);
 	free(str);
 	return (res);
 }
@@ -283,8 +277,8 @@ void	ft_expand(t_token **tokens, t_list **env)
 	while (tokens[i])
 	{
 		if (tokens[i]->type == VAR || tokens[i]->type == D_QUOTE
-			|| tokens[i]->type == IN_FILE
-			|| tokens[i]->type == OUT_A_FILE || tokens[i]->type == OUT_FILE)
+			|| tokens[i]->type == IN_FILE || tokens[i]->type == OUT_A_FILE
+			|| tokens[i]->type == OUT_FILE)
 		{
 			tokens[i]->val = ft_expand_str(env, tokens[i]->val);
 			// tokens[i]->type = WORD;

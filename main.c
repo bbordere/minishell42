@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/14 15:49:40 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/18 21:29:53 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,24 +227,30 @@ int main(int ac, char **av, char **env)
 		final = NULL;
 		joined = NULL;
 
-		// input = readline("minishell > ");
-		// input = ft_strdup("cat|cat");
-		ft_putstr_fd("Prompt > ", 0);
-		input = get_next_line(0);
+		input = readline("minishell > ");
+		// ft_putstr_fd("Prompt > ", 0);
+		// input = get_next_line(0);
 		if (!input)
 			break ;
 		if (ft_strncmp(input, "\n", ft_strlen(input)))
 		{
-			// add_history(input);
+			add_history(input);
 			tab = ft_lexer(input);
 			tokens = ft_tokenize(tab);
+			ft_check_builtin(tokens);
+			if (!ft_check_grammar(tokens))
+			{
+				ft_free((void **)tab);
+				ft_free_tokens(tokens);
+				free(input);
+				continue ;
+			}
 			ft_update_type(tokens);
 			ft_expand(tokens, data->env);
 			joined = ft_join(tokens);
 			final = ft_tokenize(joined);
 			ft_update_type(final);
-			// ft_check_builtin(final);
-			// pipes = ft_get_pipelines(final);
+			ft_check_builtin(final);
 			int o = 0;
 			while (final[o])
 			{
@@ -255,28 +261,11 @@ int main(int ac, char **av, char **env)
 			ft_free((void **)joined);
 			ft_free_tokens(tokens);
 			ft_free_tokens(final);
-			// int z = 0;
-			// char **piped;
-
-			// while(pipes[z])
-			// {
-			// 	// piped = ft_pipelines(pipes[z]);
-			// 	ft_update_pipeline(&pipes[z]);
-			// 	piped = ft_lst_to_tab(pipes[z]);
-			// 	int y = 0;
-			// 	printf("****************************\n");
-			// 	while (piped[y])
-			// 		printf("~%s~\n", piped[y++]);
-			// 	printf("****************************\n");
-			// 	ft_free_pipeline(pipes[z]);
-			// 	z++;
-			// 	ft_free((void **)piped);
-			// }
-			// free(pipes);
 		}
 		free(input);
 	}
 	printf("exit\n");
+	rl_clear_history();
 	int i;
 	i = 0;
 

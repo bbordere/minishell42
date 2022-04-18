@@ -63,8 +63,10 @@ void	ft_count_word(char *str, size_t *i, size_t *nb)
 			(*i)++;
 			while (str[*i] && str[*i] != sep)
 				(*i)++;
+			if (!str[*i])
+				break ;
 			(*i)++;
-			if (ft_isspace(str[*i]))
+			if (str[*i] && ft_isspace(str[*i]))
 				break ;
 		}
 		else
