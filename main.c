@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/19 11:26:19 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/19 21:35:35 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,62 @@ void	ft_lstdel_all(t_list **lst);
 size_t	ft_count_pipelines(t_token **tokens);
 t_list	**ft_get_pipelines(t_token **tokens);
 
+
+void	ft_lstdel_all(t_list **lst)
+{
+	t_list	*temp;
+
+	if (!lst)
+		return ;
+	temp = *lst;
+	while (lst && *lst)
+	{
+		(*lst) = (*lst)->next;
+		free(temp->content);
+		free(temp);
+		temp = *lst;
+	}
+	free(lst);
+}
+
+t_list	**ft_init_env(t_list **env, char **envp)
+{
+	size_t	i;
+	t_list	*temp;
+	char	*value;
+	int		lenght;
+
+	env = malloc(sizeof(t_list));
+	if (!env)
+		return (NULL);
+	*env = NULL;
+	i = 0;
+	while (envp && envp[i])
+	{
+		ft_lstadd_back(env, ft_lstnew(envp[i]));
+		i++;
+	}
+	temp = *env;
+	while (temp)
+	{
+		value = temp->content;
+		lenght = ft_strlen(value);
+		temp->content = ft_strdup(value);
+		temp = temp->next;
+	}
+	return (env);
+}
+
+t_data	*ft_init_data(char **envp)
+{
+	t_data	*data;
+
+	data = malloc(sizeof(t_data));
+	if (!data)
+		return (NULL);//modifier secu err
+	data->env = ft_init_env(data->env, envp);//secu malloc
+	return (data);
+}
 
 void	*ft_free_tokens(t_token **tokens)
 {

@@ -16,7 +16,7 @@ CC = gcc
 
 CFLAGS = -Werror
 
-FILES =  $(wildcard lexer/*.c) parser/parser.c expansions/expansion.c pipe/pipe.c main.c
+FILES =  $(wildcard lexer/*.c) parser/parser.c $(wildcard expansions/*.c) pipe/pipe.c main.c
 
 OBJS = $(FILES:.c=.o)
 

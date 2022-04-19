@@ -22,17 +22,18 @@
 # define DECIMAL_BASE "0123456789"
 # define NUL_STR "(null)"
 
-# ifdef __linux__
-#  define NULL_PTR "(nil)"
+# define NULL_PTR "0x0"
+// # ifdef __linux__
+// #  define NULL_PTR "(nil)"
 
-# elif
-#  ifdef __APPLE__
-#   define NULL_PTR "0x0"
-#  endif
+// # elif
+// #  ifdef __APPLE__
+// #   define NULL_PTR "0x0"
+// #  endif
 
-# else
-#  define NULL_PTR "0x0"
-# endif
+// # else
+// #  define NULL_PTR "0x0"
+// # endif
 
 typedef struct s_list
 {
@@ -90,6 +91,7 @@ char	*ft_strrchr( const char *str, int c);
 char	*ft_strnstr(const char *str, const char *to_find, size_t len);
 char	*ft_strdup(const char *source);
 char	*ft_strjoin(char *s1, char *s2);
+char	*ft_strjoin2(char *s1, char *s2);
 char	*ft_strtrim(char const *s1, char const *set);
 char	*ft_itoa(int n);
 char	*get_next_line(int fd);
