@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/18 19:36:13 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/19 15:54:08 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,27 +152,6 @@ char	**ft_extract_var(char *str)
 	return (res);
 }
 
-char	*ft_strjoin2(char *s1, char *s2)
-{
-	size_t	lens1;
-	size_t	lens2;
-	char	*s3;
-
-	lens1 = ft_strlen(s1);
-	lens2 = ft_strlen(s2);
-	s3 = malloc((lens1 + lens2 + 1) * sizeof(char));
-	if (!s3)
-		return (NULL);
-	ft_memcpy(s3, s1, lens1);
-	ft_memcpy(s3 + lens1, s2, lens2);
-	s3[lens1 + lens2] = '\0';
-	if (s1)
-		free(s1);
-	if (s2)
-		free(s2);
-	return (s3);
-}
-
 char	*ft_charjoin(char *str, char c)
 {
 	size_t	len;
@@ -207,65 +186,87 @@ char	*ft_get_str(char *str, int mode)
 	return (res);
 }
 
-char	*ft_expand_str(t_list **env, char *str)
+typedef struct s_temp
 {
 	char	**vars;
-	char	*res;
+	char	*str;
+	t_list	**env;
 	size_t	i;
-	int mode;
 	size_t	j;
+}	t_temp;
+
+void	ft_init_temp(t_temp *temp, char **vars, char *str, t_list **env)
+{
+	temp->vars = vars;
+	temp->str = str;
+	temp->env = env;
+	temp->i = 0;
+	temp->j = 0;
+}
+
+char	*ft_var(char *res, size_t *i, size_t *j, t_temp temp)
+{
+	res = ft_strjoin2(res, ft_get_var(temp.env, temp.vars[(*j)++] + 1));
+	while (temp.str[(*i) + 1] && !ft_isspace(temp.str[(*i) + 1])
+		&& !ft_isspecchar(temp.str[(*i) + 1]) && !ft_issep(temp.str[(*i) + 1])
+		&& temp.str[(*i) + 1] != '$' && !ft_ispar(temp.str[(*i) + 1]))
+			(*i)++;
+	(*i)++;
+	return (res);
+}
+
+char	*ft_str_var(char *res, size_t *i, size_t *j, t_temp temp)
+{
+	(*i)++;
+	while (temp.str[(*i)] && temp.str[(*i)] != '\"')
+	{
+		if (temp.str[(*i) + 1] && temp.str[(*i)] == '$' && temp.str[(*i) + 1] != '$' && !ft_issep(temp.str[(*i) + 1]))
+			res = ft_var(res, i, j, temp);
+		else
+			res = ft_charjoin(res, temp.str[(*i)++]);
+	}
+	(*i)++;
+	return (res);
+}
+
+char	**ft_init_expand(char *res, char *str, t_temp *temp, t_list	**env)
+{
+	char	**vars;
 
 	vars = ft_extract_var(str);
 	if (!vars)
 		return (NULL);
 	res = NULL;
-	i = 0;
-	j = 0;
-	mode = 0;
-	while (str[i])
+	ft_init_temp(temp, vars, str, env);
+	return (vars);
+}
+
+char	*ft_expand_str(t_list **env, char *str)
+{
+	char	**vars;
+	char	*res;
+	t_temp	temp;
+
+	vars = ft_init_expand(res, str, &temp, env);
+	res = NULL;
+	while (str[temp.i])
 	{
-		if (str[i] == '\"')
+		if (str[temp.i] == '\"')
+			res = ft_str_var(res, &temp.i, &temp.j, temp);
+		else if (str[temp.i] == '\'')
 		{
-			i++;
-			while (str[i] && str[i] != '\"')
-			{
-				if (str[i + 1] && str[i] == '$' && str[i + 1] != '$' && !ft_issep(str[i + 1]))
-				{
-					res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
-					while (str[i + 1] && !ft_isspace(str[i + 1])
-						&& !ft_isspecchar(str[i + 1]) && !ft_issep(str[i + 1])
-						&& str[i + 1] != '$' && !ft_ispar(str[i + 1]))
-							i++;
-					i++;
-				}
-				else
-					res = ft_charjoin(res, str[i++]);
-			}
-			i++;
+			res = ft_strjoin2(res, ft_get_str(&str[(temp.i)++], 0));
+			while(str[temp.i] && str[temp.i] != '\'')
+				temp.i++;
+			temp.i++;
 		}
-		else if (str[i] == '\'')
-		{
-			mode = 1;
-			res = ft_strjoin2(res, ft_get_str(&str[i], 0));
-			i++;
-			while(str[i] && str[i] != '\'')
-				i++;
-			i++;
-		}
-		else if (str[i + 1] && str[i] == '$' && str[i + 1] != '$' && !ft_issep(str[i + 1]))
-		{
-			res = ft_strjoin2(res, ft_get_var(env, vars[j++] + 1));
-			while (str[i + 1] && !ft_isspace(str[i + 1])
-				&& !ft_isspecchar(str[i + 1]) && !ft_issep(str[i + 1])
-				&& str[i + 1] != '$' && !ft_ispar(str[i + 1]))
-					i++;
-			i++;
-		}
+		else if (str[temp.i + 1] && str[temp.i] == '$' && str[temp.i + 1] != '$' && !ft_issep(str[temp.i + 1]))
+			res = ft_var(res, &temp.i, &temp.j, temp);
 		else
-			res = ft_charjoin(res, str[i++]);
+			res = ft_charjoin(res, str[temp.i++]);
 	}
-	ft_free((void **)vars);
-	free(str);
+	ft_free((void **)temp.vars);
+	free(temp.str);
 	return (res);
 }
 
