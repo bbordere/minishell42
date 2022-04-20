@@ -6,24 +6,15 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/19 21:35:35 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/20 15:25:52 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "lexer/lexer.h"
+#include "expansions/expansions.h"
+#include "parser/parser.h"
 #include <readline/readline.h>
 #include <readline/history.h>
-
-
-t_list	**ft_init_env(t_list **env, char **envp);
-t_data	*ft_init_data(char **envp);
-void	ft_expand(t_token **tokens, t_list **env);
-int	ft_check_grammar(t_token **tokens);
-void	ft_check_builtin(t_token **tokens);
-void	ft_lstdel_all(t_list **lst);
-size_t	ft_count_pipelines(t_token **tokens);
-t_list	**ft_get_pipelines(t_token **tokens);
-
 
 void	ft_lstdel_all(t_list **lst)
 {
@@ -106,132 +97,6 @@ void	ft_lstprint(t_list *lst)
 		lst = lst->next;
 	}
 	printf("NULL\n");
-}
-
-// char	**ft_pipelines(t_list *pipes)
-// {
-// 	size_t	j;
-// 	char	**res;
-// 	t_list	*start;
-// 	char	**temp;
-
-// 	start = pipes;
-// 	temp = NULL;
-// 	res = malloc(sizeof(char *) * (ft_lstsize(pipes) + 3));
-// 	if (!res)
-// 		return (NULL);
-// 	j = 0;
-// 	if (((t_token *)pipes->content)->type != T_FILE)
-// 		res[j++] = ft_strdup("0");
-// 	else
-// 	{
-// 		temp = ft_split(((t_token *)pipes->content)->val, ' ');
-// 		if (!temp)
-// 			return (NULL); // FREE RES
-// 		res[j++] = ft_strdup(temp[0]);
-// 		res[j++] = ft_strdup(((t_token *)pipes->content)->val + ft_strlen(temp[0]) + 1);
-// 		(((t_token *)pipes->content)->type) = WORD;
-// 		if (pipes->next)
-// 			pipes = pipes->next;
-// 	}
-// 	while (pipes->next)
-// 	{
-// 		res[j++] = ft_strdup(((t_token *)pipes->content)->val); // SECU
-// 		pipes = pipes->next;
-// 	}
-// 	if (!pipes->next && ((t_token *)pipes->content)->type != T_FILE)
-// 	{
-// 		if (pipes != start)
-// 			res[j++] = ft_strdup(((t_token *)pipes->content)->val);
-// 		res[j++] = ft_strdup("1");
-// 	}
-// 	else if (!pipes->next && ((t_token *)pipes->content)->type == T_FILE)
-// 	{
-// 		res[j++] = ft_strdup(((t_token *)pipes->content)->val);
-// 	}
-// 	res[j] = NULL;
-// 	if (temp)
-// 		ft_free((void **)temp);
-// 	return (res);
-// }
-
-void	ft_del_first_pipe(t_list **lst)
-{
-	t_list	*temp;
-	
-	temp = *lst;
-	*lst = temp->next;
-	free(((t_token *)temp->content)->val);
-	free(temp->content);
-	free(temp);
-}
-
-void	*ft_update_pipeline(t_list **pipeline)
-{
-	size_t	i;
-	t_list	*temp;
-	char	**split; 
-	char	*val;
-
-	temp = *pipeline;
-	if (((t_token *)temp->content)->type != T_FILE)
-		ft_lstadd_front(pipeline, ft_lstnew(ft_init_token("0")));
-	if (((t_token *)temp->content)->type == T_FILE)
-	{
-		((t_token *)temp->content)->type = WORD;
-		split = ft_split(((t_token *)temp->content)->val, ' ');
-		if (!split)
-			return (NULL); //SECU
-		val = ft_strdup(((t_token *)temp->content)->val);
-		if (!val)
-			return (ft_free((void **)split), NULL);
-		ft_del_first_pipe(pipeline);
-		ft_lstadd_front(pipeline, ft_lstnew(ft_init_token(val + ft_strlen(split[0]) + 1)));
-		ft_lstadd_front(pipeline, ft_lstnew(ft_init_token(split[0])));
-		ft_free((void **)split);
-		free(val);
-	}
-	temp = *pipeline;
-	while (temp->next)
-		temp = temp->next;	
-	if (((t_token *)temp->content)->type != T_FILE)
-		ft_lstadd_back(pipeline, ft_lstnew(ft_init_token("1")));
-}
-
-char	**ft_lst_to_tab(t_list	*lst)
-{
-	char	**res;
-	size_t	i;
-
-	res = malloc(sizeof(char *) * (ft_lstsize(lst) + 1));
-	if (!res)
-		return (NULL);
-	i = 0;
-	while (lst)
-	{
-		res[i] = ft_strdup(((t_token *)lst->content)->val);
-		if (!res[i])
-			return (NULL); // FREE ALL
-		i++;
-		lst = lst->next;
-	}
-	res[i] = NULL;
-	return (res);
-}
-
-void	ft_free_pipeline(t_list *pipeline)
-{
-	t_list	*temp;
-
-	temp = pipeline;
-	while (pipeline)
-	{
-		pipeline = pipeline->next;
-		free(((t_token *)temp->content)->val);
-		free(temp->content);
-		free(temp);
-		temp = pipeline;
-	}	
 }
 
 void	ft_update_type(t_token **tokens)

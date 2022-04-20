@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/17 11:03:47 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/20 14:47:31 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ size_t	ft_word_size(char *str, size_t i)
 	{
 		sep = str[i];
 		if (str[i + 1] && str[i] == '$' || (str[i] == '&' && str[i + 1] != '&'
-			&& !ft_issep(str[i + 1]) && !ft_isspace(str[i + 1])
-			&& !ft_isspecchar(str[i + 1]) && !ft_ispar(str[i + 1])))
+				&& !ft_issep(str[i + 1]) && !ft_isspace(str[i + 1])
+				&& !ft_isspecchar(str[i + 1]) && !ft_ispar(str[i + 1])))
 			return (ft_size_var(str, i));
 		else if (str[i + 1] && str[i] == '&' && str[i + 1] == '&')
 			return (2);
@@ -84,15 +84,6 @@ size_t	ft_word_size(char *str, size_t i)
 	return (size);
 }
 
-void	ft_skip_sep(char *str, size_t *i)
-{
-	char	sep;
-
-	sep = str[*i];
-	while (str[*i] && str[*i] != sep)
-		(*i)++;
-}
-
 void	ft_fill_tab(char *str, size_t *i, size_t *j, char **res)
 {
 	char	*temp;
@@ -107,7 +98,8 @@ void	ft_fill_tab(char *str, size_t *i, size_t *j, char **res)
 		ft_skip_sep(str, j);
 	temp = ft_substr(str, *j, ft_word_size(str, *j));
 	if (!temp)
-		return ;//free all tab + return NULL
+		return ;
+	//free all tab + return NULL
 	res[*i] = temp;
 	*j += ft_word_size(str, *j);
 	(*i)++;

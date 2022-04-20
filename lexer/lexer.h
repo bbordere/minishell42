@@ -10,56 +10,22 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../libft/includes/libft.h"
-#include <stdio.h>
+#ifndef LEXER_H
+# define LEXER_H
 
-enum	e_type
-{
-	WORD = 1,
-	PIPE = 2,
-	CMD = 3,
-	ARGS = 4,
-	D_PIPE = 5,
-	AND = 6,
-	D_AND = 7,
-	I_PAR = 8,
-	O_PAR = 9,
-	VAR = 10,
-	R_IN = 11,
-	R_HERE_DOC = 12,
-	R_OUT = 13,
-	R_APPEND = 14,
-	T_NULL = 15,
-	WILDCARD = 16,
-	T_FILE = 17,
-	D_QUOTE = 18,
-	S_QUOTE = 19,
-	IN_FILE = 20,
-	OUT_FILE = 21,
-	DELIMITER = 22,
-	OUT_A_FILE = 23
-};
+# include "../libft/includes/libft.h"
+# include <stdio.h>
+# include "../struct.h"
 
-typedef struct s_token
-{
-	char	*val;
-	int		type;
-}	t_token;
-
-
-typedef struct s_data{
-	t_list **env;
-}	t_data;
-
-int	ft_isspecchar(int c);
-int	ft_issep(int c);
-int	ft_ispar(int c);
+int		ft_isspecchar(int c);
+int		ft_issep(int c);
+int		ft_ispar(int c);
 void	ft_skip_spaces(char *str, size_t *i);
 void	ft_count_word_sep(char *str, size_t *i, int mode);
 void	ft_count_word_spec(char *str, size_t *i, size_t *nb);
 void	ft_count_word(char *str, size_t *i, size_t *nb);
 size_t	ft_block_count(char *str);
-int	ft_init_op(t_token *token, char *val);
+int		ft_init_op(t_token *token, char *val);
 t_token	*ft_init_token(char *val);
 t_token	**ft_tokenize(char **tab);
 void	ft_free(void **tab);
@@ -67,3 +33,6 @@ size_t	ft_size_var(char *str, size_t i);
 char	**ft_lexer(char *str);
 char	**ft_join(t_token **tokens);
 size_t	ft_tab_size(t_token	**tokens);
+void	ft_skip_sep(char *str, size_t *i);
+
+#endif
