@@ -40,7 +40,11 @@ int	ft_init_op(t_token *token, char *val)
 		token->type = WORD;
 	else if (!ft_strncmp(val, "&&", ft_strlen(val)) && ft_strlen(val) == 2)
 		token->type = D_AND;
-	else if (ft_strnstr(val, "*", ft_strlen(val)) && !ft_issep(*val))
+	else if (ft_strnstr(val, "\"", ft_strlen(val)))
+		token->type = D_QUOTE;
+	else if (ft_strnstr(val, "\'", ft_strlen(val)))
+		token->type = S_QUOTE;
+	else if (ft_strnstr(val, "*", ft_strlen(val)))
 		token->type = WILDCARD;
 	else if (ft_strnstr(val, "$", ft_strlen(val)) && !ft_isfulldollar(val))
 		token->type = VAR;
@@ -66,10 +70,6 @@ t_token	*ft_init_token(char *val)
 		token->type = I_PAR;
 	else if (!ft_strncmp(val, ")", 1))
 		token->type = O_PAR;
-	else if (ft_strnstr(val, "\"", ft_strlen(val)))
-		token->type = D_QUOTE;
-	else if (ft_strnstr(val, "\'", ft_strlen(val)))
-		token->type = S_QUOTE;
 	else
 		token->type = WORD;
 	return (token);

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/20 15:25:52 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/20 17:07:26 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,7 +168,7 @@ int main(int ac, char **av, char **env)
 			}
 			ft_update_type(tokens);
 			ft_expand(tokens, data->env);
-			joined = ft_join(tokens);
+			joined = ft_join(tokens);		
 			final = ft_tokenize(joined);
 			ft_update_type(final);
 			ft_check_builtin(final);

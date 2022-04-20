@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/20 14:47:31 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/20 17:06:51 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,16 @@ size_t	ft_size_str(char *str, int i)
 
 	sep = str[i];
 	size = 0;
-	while (str[i + size] && !ft_isspace(str[i + size])
-		&& !ft_isspecchar(str[i + size])
-		&& !ft_ispar(str[i + size]) && !(str[i + size] == '&'
-			&& str[i + 1 + size] == '&'))
+	while (str[i + size] && !ft_isspace(str[i + size]) && !ft_isspecchar(str[i + size]) 
+			&& !ft_ispar(str[i + size]) && !(str[i + size] == '&' && str[i + 1 + size] == '&'))
 	{
 		if (ft_issep(str[i + size]))
 		{
-			sep = str[i + size];
-			size++;
-			while (str[i + size] && str[i + size] != sep
-				&& !ft_isspecchar(str[i + size]))
+			sep = str[i + size++];
+			while (str[i + size] && str[i + size] != sep && !ft_isspecchar(str[i + size]))
 				size++;
-			if (ft_isspace(str[i + size]))
+			size++;
+			if (str[i + size] && ft_isspace(str[i + size]))
 				break ;
 		}
 		else

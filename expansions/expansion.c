@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/19 23:16:24 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/20 16:33:47 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void	ft_expand(t_token **tokens, t_list **env)
 			|| tokens[i]->type == OUT_FILE || tokens[i]->type == S_QUOTE)
 		{
 			tokens[i]->val = ft_expand_str(env, tokens[i]->val);
-			// tokens[i]->type = WORD;
+			tokens[i]->type = WORD;
 		}
 		// else if (tokens[i]->type == S_QUOTE)
 		// {
