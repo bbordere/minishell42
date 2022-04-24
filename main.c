@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/20 17:07:26 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/24 14:04:59 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,23 +15,6 @@
 #include "parser/parser.h"
 #include <readline/readline.h>
 #include <readline/history.h>
-
-void	ft_lstdel_all(t_list **lst)
-{
-	t_list	*temp;
-
-	if (!lst)
-		return ;
-	temp = *lst;
-	while (lst && *lst)
-	{
-		(*lst) = (*lst)->next;
-		free(temp->content);
-		free(temp);
-		temp = *lst;
-	}
-	free(lst);
-}
 
 t_list	**ft_init_env(t_list **env, char **envp)
 {
@@ -61,15 +44,51 @@ t_list	**ft_init_env(t_list **env, char **envp)
 	return (env);
 }
 
+t_list	**ft_init_wd(t_list **wd)
+{
+	wd = malloc(sizeof(t_list));
+	if (!wd)
+		return (NULL);
+	*wd = NULL;
+	return (wd);
+}
+
 t_data	*ft_init_data(char **envp)
 {
 	t_data	*data;
 
 	data = malloc(sizeof(t_data));
 	if (!data)
-		return (NULL);//modifier secu err
-	data->env = ft_init_env(data->env, envp);//secu malloc
+		return (NULL);//modifier secu err dans main
+	data->env = ft_init_env(data->env, envp);
+	if (!data->env)
+		return (NULL);
+	data->wd = ft_init_wd(data->wd);
+	if (!data->wd)
+		return (NULL);
+	data->fd_in = STDIN_FILENO;
+	data->fd_out = STDOUT_FILENO;
+	data->rtn_val = 0;
+	data->nb_heredoc = 0;
+	data->act_heredoc = -1;
 	return (data);
+}
+
+void	ft_lstdel_all(t_list **lst)
+{
+	t_list	*temp;
+
+	if (!lst)
+		return ;
+	temp = *lst;
+	while (lst && *lst)
+	{
+		(*lst) = (*lst)->next;
+		free(temp->content);
+		free(temp);
+		temp = *lst;
+	}
+	free(lst);
 }
 
 void	*ft_free_tokens(t_token **tokens)
@@ -167,8 +186,8 @@ int main(int ac, char **av, char **env)
 				continue ;
 			}
 			ft_update_type(tokens);
-			ft_expand(tokens, data->env);
-			joined = ft_join(tokens);		
+			ft_expand(tokens, data->env, data->wd);
+			joined = ft_join(tokens);
 			final = ft_tokenize(joined);
 			ft_update_type(final);
 			ft_check_builtin(final);
@@ -198,6 +217,7 @@ int main(int ac, char **av, char **env)
 		while (final[i])
 			free(final[i++]->val);
 	ft_lstdel_all(data->env);
+	ft_lstdel_all(data->wd);
 	free(data);
 	if (joined)
 		ft_free((void **)joined);

@@ -28,25 +28,25 @@ int	ft_isfulldollar(char *str)
 
 int	ft_init_op(t_token *token, char *val)
 {
-	if (!ft_strncmp(val, "<", ft_strlen(val)) && ft_strlen(val) == 1)
+	if (!ft_strcmp(val, "<") && ft_strlen(val) == 1)
 		token->type = R_IN;
-	else if (!ft_strncmp(val, "<<", ft_strlen(val)) && ft_strlen(val) == 2)
+	else if (!ft_strcmp(val, "<<") && ft_strlen(val) == 2)
 		token->type = R_HERE_DOC;
-	else if (!ft_strncmp(val, ">", ft_strlen(val)) && ft_strlen(val) == 1)
+	else if (!ft_strcmp(val, ">") && ft_strlen(val) == 1)
 		token->type = R_OUT;
-	else if (!ft_strncmp(val, ">>", ft_strlen(val)) && ft_strlen(val) == 2)
+	else if (!ft_strcmp(val, ">>") && ft_strlen(val) == 2)
 		token->type = R_APPEND;
-	else if (!ft_strncmp(val, "&", ft_strlen(val)))
+	else if (!ft_strcmp(val, "&"))
 		token->type = WORD;
-	else if (!ft_strncmp(val, "&&", ft_strlen(val)) && ft_strlen(val) == 2)
+	else if (!ft_strcmp(val, "&&") && ft_strlen(val) == 2)
 		token->type = D_AND;
-	else if (ft_strnstr(val, "\"", ft_strlen(val)))
+	else if (ft_strstr(val, "\""))
 		token->type = D_QUOTE;
-	else if (ft_strnstr(val, "\'", ft_strlen(val)))
+	else if (ft_strstr(val, "\'"))
 		token->type = S_QUOTE;
-	else if (ft_strnstr(val, "*", ft_strlen(val)))
+	else if (ft_strstr(val, "*"))
 		token->type = WILDCARD;
-	else if (ft_strnstr(val, "$", ft_strlen(val)) && !ft_isfulldollar(val))
+	else if (ft_strstr(val, "$") && !ft_isfulldollar(val))
 		token->type = VAR;
 	return (token->type == T_NULL);
 }
@@ -62,13 +62,13 @@ t_token	*ft_init_token(char *val)
 	token->type = T_NULL;
 	if (!ft_init_op(token, val))
 		return (token);
-	if (!ft_strncmp(val, "|", ft_strlen(val)))
+	if (!ft_strcmp(val, "|"))
 		token->type = PIPE;
-	else if (!ft_strncmp(val, "||", ft_strlen(val)))
+	else if (!ft_strcmp(val, "||"))
 		token->type = D_PIPE;
-	else if (!ft_strncmp(val, "(", 1))
+	else if (!ft_strcmp(val, "("))
 		token->type = I_PAR;
-	else if (!ft_strncmp(val, ")", 1))
+	else if (!ft_strcmp(val, ")"))
 		token->type = O_PAR;
 	else
 		token->type = WORD;

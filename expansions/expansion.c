@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/20 16:33:47 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/24 14:12:18 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,57 @@ char	*ft_expand_str(t_list **env, char *str)
 	return (res);
 }
 
-void	ft_expand(t_token **tokens, t_list **env)
+char	**ft_lst_to_tab(t_list **lst)
+{
+	t_list	*temp;
+	char	**res;
+	size_t	i;
+
+	temp = *lst;
+	res = malloc(sizeof(char *) * (ft_lstsize(temp) + 1));
+	if (!res)
+		return (NULL);
+	i = 0;
+	while (temp)
+	{
+		res[i] = ft_strdup(((char *)temp->content));
+		if (!res[i])
+			return (NULL);// FREE ALL
+		i++;
+		temp = temp->next;
+	}
+	res[i] = NULL;
+	return (res);
+}
+
+char	*ft_expand_wildcard(t_list **wd, char *val)
+{
+	char	*res;
+	char	**temp;
+	size_t	i;
+
+	i = 0;
+	res = NULL;
+	ft_wildcard(wd, val);
+	temp = ft_lst_to_tab(wd);
+	if (!temp)
+		return (NULL);
+	if (!*temp)
+	{
+		ft_free_tab((void **)temp);
+		res = ft_strdup(val);
+		free(val);
+		return (res);
+	}
+	free(val);
+	while (temp[i])
+		res = ft_strjoin(ft_strjoin(res, temp[i++]), " ");
+	ft_free_tab((void **)temp);
+	ft_lstclear(wd, free);
+	return (res);
+}
+
+void	ft_expand(t_token **tokens, t_list **env, t_list **wd)
 {
 	size_t	i;
 
@@ -81,6 +131,11 @@ void	ft_expand(t_token **tokens, t_list **env)
 			tokens[i]->val = ft_expand_str(env, tokens[i]->val);
 			tokens[i]->type = WORD;
 		}
+		else if (tokens[i]->type == WILDCARD)
+		{
+			tokens[i]->val = ft_expand_wildcard(wd, tokens[i]->val);
+		}
+		
 		// else if (tokens[i]->type == S_QUOTE)
 		// {
 		// 	tokens[i]->val = ft_get_str(tokens[i]->val, 1);

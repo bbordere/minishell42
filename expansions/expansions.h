@@ -38,10 +38,11 @@ char			**ft_init_expand(char **res, char *str,
 					t_temp *temp, t_list **env);
 char			*ft_copy_quotes(char *res, t_temp *temp);
 char			*ft_expand_str(t_list **env, char *str);
-void			ft_expand(t_token **tokens, t_list **env);
+void			ft_expand(t_token **tokens, t_list **env, t_list **wd);
 void			ft_lstdel_all(t_list **lst);
 int				ft_isspecchar(int c);
 int				ft_ispar(int c);
 int				ft_issep(int c);
+int				ft_wildcard(t_list **wd, char *str);
 
 #endif

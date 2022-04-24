@@ -16,6 +16,7 @@
 # include "../libft/includes/libft.h"
 # include <stdio.h>
 # include "../struct.h"
+# include <dirent.h>
 
 int		ft_isspecchar(int c);
 int		ft_issep(int c);
