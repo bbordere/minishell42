@@ -14,7 +14,7 @@ CC = gcc
 
 # CFLAGS = -g3 -lrealine -Ofast libft/libft.a
 
-CFLAGS = 
+CFLAGS = -g3
 
 FILES =  $(wildcard lexer/*.c) $(wildcard parser/*.c) $(wildcard expansions/*.c) main.c
 
@@ -29,7 +29,7 @@ NAME = minishell
 $(NAME): $(OBJS)
 	@ $(MAKE) -C libft all --no-print-directory
 	@ printf '\n\033[0;33mCompiling minishell\033[0m\n'
-	@ $(CC) $(CFLAGS) -g3 $(OBJS) -lreadline libft/libft.a  -o  $(NAME) 
+	@ $(CC) $(CFLAGS) $(OBJS) -lreadline libft/libft.a  -o  $(NAME) 
 	@ printf '\033[0;32mminishell compiled sucessfully !\033[0m\n'
 
 all: $(NAME)

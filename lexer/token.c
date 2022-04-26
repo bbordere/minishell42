@@ -26,6 +26,22 @@ int	ft_isfulldollar(char *str)
 	return (1);
 }
 
+int	ft_iswildcard(char *val)
+{
+	ssize_t	i;
+
+	i = -1;
+	while (val[++i])
+	{
+		if (val[i] && ft_issep(val[i]))
+			ft_skip_sep(val, &i);
+		if (val[i] && val[i] == '*')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
 int	ft_init_op(t_token *token, char *val)
 {
 	if (!ft_strcmp(val, "<") && ft_strlen(val) == 1)
@@ -40,12 +56,12 @@ int	ft_init_op(t_token *token, char *val)
 		token->type = WORD;
 	else if (!ft_strcmp(val, "&&") && ft_strlen(val) == 2)
 		token->type = D_AND;
+	else if (ft_strstr(val, "*") && ft_iswildcard(val))
+		token->type = WILDCARD;
 	else if (ft_strstr(val, "\""))
 		token->type = D_QUOTE;
 	else if (ft_strstr(val, "\'"))
 		token->type = S_QUOTE;
-	else if (ft_strstr(val, "*"))
-		token->type = WILDCARD;
 	else if (ft_strstr(val, "$") && !ft_isfulldollar(val))
 		token->type = VAR;
 	return (token->type == T_NULL);

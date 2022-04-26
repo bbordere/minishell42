@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:20:53 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/20 15:39:34 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/26 19:49:09 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,9 @@
 # include "../struct.h"
 # include "../libft/includes/libft.h"
 # include "../lexer/lexer.h"
+# include <fcntl.h>
 # include <stdio.h>
+# include <sys/wait.h>
 
 # define ERROR_MSG "minishell: syntax error near unexpected token "
 

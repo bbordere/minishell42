@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 16:08:45 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/20 16:34:57 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/26 22:15:55 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ size_t	ft_count_join(t_token **tokens)
 	nb = 0;
 	while (tokens[i])
 	{
-		if (tokens[i + 1] && !ft_islimit(tokens[i]->type))
+		if (tokens[i] && !ft_islimit(tokens[i]->type))
 			while (tokens[i] && !ft_islimit(tokens[i]->type))
 				i++;
 		else

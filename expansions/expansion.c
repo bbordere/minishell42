@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/24 14:12:18 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/26 23:10:48 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,7 @@ char	**ft_lst_to_tab(t_list **lst)
 	return (res);
 }
 
-char	*ft_expand_wildcard(t_list **wd, char *val)
+char	*ft_expand_wildcard(t_list **wd, char *val, t_list **env)
 {
 	char	*res;
 	char	**temp;
@@ -98,6 +98,7 @@ char	*ft_expand_wildcard(t_list **wd, char *val)
 
 	i = 0;
 	res = NULL;
+	val = ft_expand_str(env, val);
 	ft_wildcard(wd, val);
 	temp = ft_lst_to_tab(wd);
 	if (!temp)
@@ -129,11 +130,11 @@ void	ft_expand(t_token **tokens, t_list **env, t_list **wd)
 			|| tokens[i]->type == OUT_FILE || tokens[i]->type == S_QUOTE)
 		{
 			tokens[i]->val = ft_expand_str(env, tokens[i]->val);
-			tokens[i]->type = WORD;
+			// tokens[i]->type = WORD;
 		}
 		else if (tokens[i]->type == WILDCARD)
 		{
-			tokens[i]->val = ft_expand_wildcard(wd, tokens[i]->val);
+			tokens[i]->val = ft_expand_wildcard(wd, tokens[i]->val, env);
 		}
 		
 		// else if (tokens[i]->type == S_QUOTE)

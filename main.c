@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/24 14:04:59 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/26 23:15:12 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,9 +137,9 @@ void	ft_update_type(t_token **tokens)
 				tokens[i]->type = OUT_A_FILE;
 		}
 		i++;
-	}
-	
+	}	
 }
+void	ft_check_separator(t_data *data, t_token **args, t_list **env);
 
 int main(int ac, char **av, char **env)
 {
@@ -177,7 +177,7 @@ int main(int ac, char **av, char **env)
 			add_history(input);
 			tab = ft_lexer(input);
 			tokens = ft_tokenize(tab);
-			ft_check_builtin(tokens);
+			// ft_check_builtin(tokens);
 			if (!ft_check_grammar(tokens))
 			{
 				ft_free((void **)tab);
@@ -190,13 +190,14 @@ int main(int ac, char **av, char **env)
 			joined = ft_join(tokens);
 			final = ft_tokenize(joined);
 			ft_update_type(final);
-			ft_check_builtin(final);
+			// ft_check_builtin(final);
 			int o = 0;
 			while (final[o])
 			{
-				printf("%s %d\n", final[o]->val, final[o]->type);
+				printf("----------%s %d----------\n", final[o]->val, final[o]->type);
 				o++;
-			}			
+			}
+			ft_check_separator(data, final, data->env);
 			ft_free((void **)tab);
 			ft_free((void **)joined);
 			ft_free_tokens(tokens);
@@ -230,9 +231,62 @@ int main(int ac, char **av, char **env)
 	return 0;
 }
 
-
-// int main(int argc, char const *argv[])
+// int	main(int argc, char **argv, char **envp)
 // {
-// 	printf("%lu",ft_size_var("&TEST&TEST&", 0));
-// 	return 0;
+// 	t_data	*data;
+// 	char	**tab;
+// 	char	**tab2;
+// 	char	**tab3;
+// 	t_token **tab4;
+
+// //	tab = ft_split("a HOME", ' ');
+// //	tab2 = ft_split("a /tmp", ' ');
+// //	tab3 = ft_split("cd /usr/bin/", ' ');
+// 	data = ft_init_data(envp);
+// //	ft_echo(tab);
+// //	data->env = ft_export(data->env, tab);
+// //	ft_env(data->env);
+// //	data->env = ft_unset(data->env, tab);
+// //	ft_cd(data, tab2);
+// //	ft_pwd();
+// //	ft_env(data->env);
+// //	ft_wildcard(data->wd, "*in*");
+
+// 	int	i;
+
+// 	i = 0;
+// 	tab4 = malloc(sizeof(t_token *) * 6);
+// 	while (i < 6)
+// 	{
+// 		tab4[i] = malloc(sizeof(t_token));
+// 		i++;
+// 	}
+// 	tab4[0]->val = "<";
+// 	tab4[0]->type = R_IN;
+// 	tab4[1]->val = "in";
+// 	tab4[1]->type = IN_FILE;
+// 	tab4[2]->val = "cat";
+// 	tab4[2]->type = WORD;
+// 	tab4[3]->val = "|";
+// 	tab4[3]->type = PIPE;
+// 	tab4[4]->val = "cat";
+// 	tab4[4]->type = WORD;
+// 	tab4[5] = NULL;
+// 	ft_check_separator(data, tab4, data->env);
+// /*
+// 	char *input;
+// 	ft_init_sig();
+// 	while(1)
+// 	{
+// 		input = readline("Prompt > ");
+// 		if (!input)
+// 			break ;
+// 		add_history(input);
+// 	printf("%s", input);
+// 	}
+// 	printf("exit");
+// */
+// 	ft_lstdel_all(data->env);
+// 	ft_lstdel_all(data->wd);
+// 	free(data);
 // }
