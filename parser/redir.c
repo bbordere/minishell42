@@ -331,8 +331,8 @@ void	ft_pipe(t_data *data, t_token **args, t_list **env, int in)
 	{
 		close(fd[0]);
 		dup2(fd[1], data->fd_out);
-		//if (in == data->fd_in)
-		//	exit(EXIT_FAILURE);
+		if (in == data->fd_in)
+			exit(EXIT_FAILURE);
 		ft_glhf(data, args, env);
 		close(fd[1]);
 	}

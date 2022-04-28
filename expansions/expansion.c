@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/26 23:10:48 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/28 11:46:49 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,14 +133,7 @@ void	ft_expand(t_token **tokens, t_list **env, t_list **wd)
 			// tokens[i]->type = WORD;
 		}
 		else if (tokens[i]->type == WILDCARD)
-		{
 			tokens[i]->val = ft_expand_wildcard(wd, tokens[i]->val, env);
-		}
-		
-		// else if (tokens[i]->type == S_QUOTE)
-		// {
-		// 	tokens[i]->val = ft_get_str(tokens[i]->val, 1);
-		// }
 		i++;
 	}	
 }

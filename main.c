@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/26 23:15:12 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/28 11:56:33 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include "parser/parser.h"
 #include <readline/readline.h>
 #include <readline/history.h>
+
+void	ft_check_separator(t_data *data, t_token **args, t_list **env);
 
 t_list	**ft_init_env(t_list **env, char **envp)
 {
@@ -139,154 +141,78 @@ void	ft_update_type(t_token **tokens)
 		i++;
 	}	
 }
-void	ft_check_separator(t_data *data, t_token **args, t_list **env);
+
+void	ft_free_loop(void **lexed, void **regrouped, t_token **tokens, t_token **final)
+{
+	if (lexed)
+		ft_free((void **)lexed);
+	if (regrouped)
+		ft_free((void **)regrouped);
+	if (tokens)
+		ft_free_tokens(tokens);
+	if (final)
+		ft_free_tokens(final);
+	lexed = NULL;
+	regrouped = NULL;
+	tokens = NULL;
+	final = NULL;
+}
+
+/*
+Pour skip suppress les leaks de readline avec valgrind : valgrind --suppressions=rl ./minishell
+*/
 
 int main(int ac, char **av, char **env)
 {
 	t_data *data;
-	t_token **tokens;
-	t_token	**final;
-	char	**tab;
+	t_token **tokens; //Premier tableau de tokens
+	t_token	**final; // Tableau de tokens une fois regroupe
+	char	**lexed; // Tableau des strings une fois "lexee"
 	char	*input;
-	char	**joined;
-	t_list	**pipes;
-
+	char	**regrouped; // Tableau des strings "regroupees"
+	
 	data = ft_init_data(env);
-
-	input = NULL;
-	tab = NULL;
-	tokens = NULL;
-	final = NULL;
-	joined = NULL;
-
 	while (1)
 	{
 		input = NULL;
-		tab = NULL;
+		lexed = NULL;
 		tokens = NULL;
 		final = NULL;
-		joined = NULL;
+		regrouped = NULL;
 
 		input = readline("minishell > ");
-		// ft_putstr_fd("Prompt > ", 0);
-		// input = get_next_line(0);
 		if (!input)
 			break ;
-		if (ft_strncmp(input, "\n", ft_strlen(input)))
+		if (ft_strcmp(input, "\n"))
 		{
 			add_history(input);
-			tab = ft_lexer(input);
-			tokens = ft_tokenize(tab);
-			// ft_check_builtin(tokens);
-			if (!ft_check_grammar(tokens))
+			lexed = ft_lexer(input);
+			tokens = ft_tokenize(lexed);
+			if (!ft_check_grammar(tokens)) // Renvoie le msg d'erreur dans la fonction ft_check_grammar
 			{
-				ft_free((void **)tab);
+				ft_free((void **)lexed);
 				ft_free_tokens(tokens);
 				free(input);
 				continue ;
 			}
 			ft_update_type(tokens);
 			ft_expand(tokens, data->env, data->wd);
-			joined = ft_join(tokens);
-			final = ft_tokenize(joined);
+			regrouped = ft_join(tokens);
+			final = ft_tokenize(regrouped);
 			ft_update_type(final);
-			// ft_check_builtin(final);
-			int o = 0;
-			while (final[o])
-			{
-				printf("----------%s %d----------\n", final[o]->val, final[o]->type);
-				o++;
-			}
-			ft_check_separator(data, final, data->env);
-			ft_free((void **)tab);
-			ft_free((void **)joined);
-			ft_free_tokens(tokens);
-			ft_free_tokens(final);
+			// ft_check_builtin(final);  //Desactiver pour les tests de pipes
+			ft_check_separator(data, final, data->env); // Changer le nom de la fonction
+			ft_free_loop((void **)lexed, (void **)regrouped, tokens, final);
 		}
 		free(input);
 	}
 	printf("exit\n");
 	rl_clear_history();
-	int i;
-	i = 0;
 
-	if (tokens)
-		while (tokens[i])
-			free(tokens[i++]->val);
-	i = 0;
-	if (final)
-		while (final[i])
-			free(final[i++]->val);
 	ft_lstdel_all(data->env);
 	ft_lstdel_all(data->wd);
 	free(data);
-	if (joined)
-		ft_free((void **)joined);
-	if (final)
-		ft_free((void **)final);
-	if (tokens)
-		ft_free((void **)tokens);
-	if (tab)
-		ft_free((void **)tab);
-	return 0;
+	ft_free_loop((void **)lexed, (void **)regrouped, tokens, final);
+
+	return (0);
 }
-
-// int	main(int argc, char **argv, char **envp)
-// {
-// 	t_data	*data;
-// 	char	**tab;
-// 	char	**tab2;
-// 	char	**tab3;
-// 	t_token **tab4;
-
-// //	tab = ft_split("a HOME", ' ');
-// //	tab2 = ft_split("a /tmp", ' ');
-// //	tab3 = ft_split("cd /usr/bin/", ' ');
-// 	data = ft_init_data(envp);
-// //	ft_echo(tab);
-// //	data->env = ft_export(data->env, tab);
-// //	ft_env(data->env);
-// //	data->env = ft_unset(data->env, tab);
-// //	ft_cd(data, tab2);
-// //	ft_pwd();
-// //	ft_env(data->env);
-// //	ft_wildcard(data->wd, "*in*");
-
-// 	int	i;
-
-// 	i = 0;
-// 	tab4 = malloc(sizeof(t_token *) * 6);
-// 	while (i < 6)
-// 	{
-// 		tab4[i] = malloc(sizeof(t_token));
-// 		i++;
-// 	}
-// 	tab4[0]->val = "<";
-// 	tab4[0]->type = R_IN;
-// 	tab4[1]->val = "in";
-// 	tab4[1]->type = IN_FILE;
-// 	tab4[2]->val = "cat";
-// 	tab4[2]->type = WORD;
-// 	tab4[3]->val = "|";
-// 	tab4[3]->type = PIPE;
-// 	tab4[4]->val = "cat";
-// 	tab4[4]->type = WORD;
-// 	tab4[5] = NULL;
-// 	ft_check_separator(data, tab4, data->env);
-// /*
-// 	char *input;
-// 	ft_init_sig();
-// 	while(1)
-// 	{
-// 		input = readline("Prompt > ");
-// 		if (!input)
-// 			break ;
-// 		add_history(input);
-// 	printf("%s", input);
-// 	}
-// 	printf("exit");
-// */
-// 	ft_lstdel_all(data->env);
-// 	ft_lstdel_all(data->wd);
-// 	free(data);
-// }

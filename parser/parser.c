@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 14:46:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/20 15:47:02 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/28 11:48:03 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	ft_check_grammar(t_token **tokens)
 				return (printf("%s'%s'\n", ERROR_MSG, tokens[i]->val), 0);
 		if (tokens[i]->type == S_QUOTE || tokens[i]->type == D_QUOTE)
 			if (!ft_check_quotes(tokens[i]))
-				return (printf("minishell: unexpected EOF while	looking for matching quotes\n"), 0);
+				return (printf("minishell: unexpected EOF while	looking for matching quotes\n"), 0); // A changer pour afficher quelle quote manque
 		i++;
 	}
 	return (1);

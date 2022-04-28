@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/20 17:06:51 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/28 11:47:18 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,7 @@ void	ft_fill_tab(char *str, size_t *i, size_t *j, char **res)
 		ft_skip_sep(str, j);
 	temp = ft_substr(str, *j, ft_word_size(str, *j));
 	if (!temp)
-		return ;
-	//free all tab + return NULL
+		return ; //free all tab + return NULL
 	res[*i] = temp;
 	*j += ft_word_size(str, *j);
 	(*i)++;
