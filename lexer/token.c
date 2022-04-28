@@ -26,6 +26,17 @@ int	ft_isfulldollar(char *str)
 	return (1);
 }
 
+void	ft_skip_quotes(char *val, ssize_t *i)
+{
+	char	sep;
+
+	sep = val[*i];
+	(*i)++;
+	while (val[*i] && val[*i] != sep)
+		(*i)++;
+}
+
+
 int	ft_iswildcard(char *val)
 {
 	ssize_t	i;
@@ -34,7 +45,7 @@ int	ft_iswildcard(char *val)
 	while (val[++i])
 	{
 		if (val[i] && ft_issep(val[i]))
-			ft_skip_sep(val, &i);
+			ft_skip_quotes(val, &i);
 		if (val[i] && val[i] == '*')
 			return (1);
 	}
