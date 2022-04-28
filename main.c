@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/28 11:56:33 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/04/28 12:24:43 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,13 +120,16 @@ void	ft_lstprint(t_list *lst)
 	printf("NULL\n");
 }
 
-void	ft_update_type(t_token **tokens)
+void	ft_update_type(t_token **tokens, int mode) // Mode sert juste a rechanger le type des wildcards qui ont deja ete expand 
 {
 	size_t	i;
 
 	i = 0;
 	while (tokens[i])
 	{
+		if (mode == 1)
+			if (tokens[i]->type == WILDCARD)
+				tokens[i]->type = WORD;
 		if (i != 0 && tokens[i - 1])
 		{
 			if (tokens[i - 1]->type == R_OUT)
@@ -195,11 +198,11 @@ int main(int ac, char **av, char **env)
 				free(input);
 				continue ;
 			}
-			ft_update_type(tokens);
+			ft_update_type(tokens, 0);
 			ft_expand(tokens, data->env, data->wd);
 			regrouped = ft_join(tokens);
 			final = ft_tokenize(regrouped);
-			ft_update_type(final);
+			ft_update_type(final, 1);
 			// ft_check_builtin(final);  //Desactiver pour les tests de pipes
 			ft_check_separator(data, final, data->env); // Changer le nom de la fonction
 			ft_free_loop((void **)lexed, (void **)regrouped, tokens, final);

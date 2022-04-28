@@ -37,7 +37,6 @@ int	ft_iswildcard(char *val)
 			ft_skip_sep(val, &i);
 		if (val[i] && val[i] == '*')
 			return (1);
-		i++;
 	}
 	return (0);
 }
