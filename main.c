@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/28 12:35:34 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/07 12:51:53 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,8 @@ t_data	*ft_init_data(char **envp)
 	data->wd = ft_init_wd(data->wd);
 	if (!data->wd)
 		return (NULL);
-	data->fd_in = STDIN_FILENO;
-	data->fd_out = STDOUT_FILENO;
+	data->fd_in = dup(STDIN_FILENO);
+	data->fd_out = dup(STDOUT_FILENO);
 	data->rtn_val = 0;
 	data->nb_heredoc = 0;
 	data->act_heredoc = -1;
@@ -128,7 +128,7 @@ void	ft_update_type(t_token **tokens, int mode) // Mode sert juste a rechanger l
 	while (tokens[i])
 	{
 		if (mode == 1)
-			if (tokens[i]->type == WILDCARD)
+			if (tokens[i]->type == WILDCARD || tokens[i]->type == S_QUOTE || tokens[i]->type == D_QUOTE || tokens[i]->type == VAR)
 				tokens[i]->type = WORD;
 		if (i != 0 && tokens[i - 1])
 		{
@@ -182,7 +182,6 @@ int main(int ac, char **av, char **env)
 		tokens = NULL;
 		final = NULL;
 		regrouped = NULL;
-
 		input = readline("minishell > ");
 		if (!input)
 			break ;
@@ -203,6 +202,14 @@ int main(int ac, char **av, char **env)
 			regrouped = ft_join(tokens);
 			final = ft_tokenize(regrouped);
 			ft_update_type(final, 1);
+			int i = 0;
+			while (final[i])
+			{
+				printf("%s : %d\n", final[i]->val, final[i]->type);
+				i++;
+			}
+			
+
 			// ft_check_builtin(final);  //Desactiver pour les tests de pipes
 			ft_check_separator(data, final, data->env); // Changer le nom de la fonction
 			ft_free_loop((void **)lexed, (void **)regrouped, tokens, final);
