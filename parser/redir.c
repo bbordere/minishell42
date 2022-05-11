@@ -128,6 +128,21 @@ void	ft_free_command_norme(char *arg)
 	exit(EXIT_FAILURE);
 }
 
+char	**ft_get_cmd(char **command)
+{
+	ssize_t	i;
+
+	i = -1;
+	while (command[++i])
+	{
+		if (command[i][0] == '\'')
+		{
+			ft_memmove(command[i], &command[i][1], ft_strlen(command[i]));
+			command[i][ft_strlen(command[i]) - 1] = '\0';
+		}
+	}
+}
+
 void	ft_exec(t_list **env, char *arg)
 {
 	char	**command;
@@ -135,6 +150,7 @@ void	ft_exec(t_list **env, char *arg)
 	char	*path;
 
 	command = ft_lexer(arg);
+	ft_get_cmd(command);
 	if (!command)
 		ft_free_command_norme(arg);
 	free(arg);

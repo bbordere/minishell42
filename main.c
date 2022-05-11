@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/07 12:51:53 by marvin           ###   ########.fr       */
+/*   Updated: 2022/05/11 16:11:50 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,15 @@ void	ft_update_type(t_token **tokens, int mode) // Mode sert juste a rechanger l
 			else if (tokens[i - 1]->type == R_APPEND)
 				tokens[i]->type = OUT_A_FILE;
 		}
+		if (tokens[i]->type == OUT_A_FILE || tokens[i]->type == OUT_FILE
+		||tokens[i]->type == IN_FILE || tokens[i]->type == DELIMITER)
+		{
+			if (tokens[i]->val[0] == '\'')
+			{
+				ft_memmove(tokens[i]->val, &tokens[i]->val[1], ft_strlen(tokens[i]->val));
+				tokens[i]->val[ft_strlen(tokens[i]->val) - 1] = '\0';
+			}
+		}
 		i++;
 	}	
 }
@@ -165,6 +174,23 @@ void	ft_free_loop(void **lexed, void **regrouped, t_token **tokens, t_token **fi
 Pour skip suppress les leaks de readline avec valgrind : valgrind --suppressions=rl ./minishell
 */
 
+char	*ft_prompt(t_list **env)
+{
+	char	*prompt;
+	char	*pwd;
+	char	*home;
+
+	pwd = ft_get_var(env, "PWD");
+	home = ft_get_var(env, "HOME");
+	prompt = ft_strjoin("\033[0;32m", ft_strjoin(ft_charjoin(ft_get_var(env, "LOGNAME"), '@'), "minishell\033[0;37m:\033[0;34m"));
+	if (ft_strstr(pwd, home))
+		prompt = ft_strjoin(prompt, ft_strjoin("~", pwd + ft_strlen(home)));
+	else
+		prompt = ft_strjoin(prompt, pwd);
+	prompt = ft_strjoin(prompt, "\033[0;37m$ ");
+	return (prompt);
+}
+
 int main(int ac, char **av, char **env)
 {
 	t_data *data;
@@ -173,6 +199,7 @@ int main(int ac, char **av, char **env)
 	char	**lexed; // Tableau des strings une fois "lexee"
 	char	*input;
 	char	**regrouped; // Tableau des strings "regroupees"
+	char	*prompt;
 	
 	data = ft_init_data(env);
 	while (1)
@@ -182,7 +209,8 @@ int main(int ac, char **av, char **env)
 		tokens = NULL;
 		final = NULL;
 		regrouped = NULL;
-		input = readline("minishell > ");
+		prompt = ft_prompt(data->env);
+		input = readline(prompt);
 		if (!input)
 			break ;
 		if (ft_strcmp(input, "\n"))
@@ -202,20 +230,21 @@ int main(int ac, char **av, char **env)
 			regrouped = ft_join(tokens);
 			final = ft_tokenize(regrouped);
 			ft_update_type(final, 1);
-			int i = 0;
-			while (final[i])
-			{
-				printf("%s : %d\n", final[i]->val, final[i]->type);
-				i++;
-			}
-			
+			// int i = 0;
+			// while (final[i])
+			// {
+			// 	printf("%s : %d\n", final[i]->val, final[i]->type);
+			// 	i++;
+			// }
 
 			// ft_check_builtin(final);  //Desactiver pour les tests de pipes
 			ft_check_separator(data, final, data->env); // Changer le nom de la fonction
 			ft_free_loop((void **)lexed, (void **)regrouped, tokens, final);
 		}
+		free(prompt);
 		free(input);
 	}
+	free(prompt);
 	printf("exit\n");
 	rl_clear_history();
 

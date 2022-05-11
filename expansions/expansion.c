@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/07 12:47:55 by marvin           ###   ########.fr       */
+/*   Updated: 2022/05/11 14:45:02 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,42 @@ char	*ft_copy_quotes(char *res, t_temp *temp)
 	return (res);
 }
 
+char	*ft_strncpy(char *dest, char *src, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	while (src[i] != '\0' && i < n)
+	{
+		dest[i] = src[i];
+		++i;
+	}
+	while (i < n)
+	{
+		dest[i] = '\0';
+		i++;
+	}
+	return (dest);
+}
+
+char	*ft_frame_str(char *str, char c)
+{
+	char	*res;
+	ssize_t	i;
+
+	res = malloc(sizeof(char) * (ft_strlen(str) + 3));
+	if (!res)
+		return (NULL);
+	i = -1;
+	res[0] = c;
+	while (str[++i])
+		res[i + 1] = str[i];
+	res[i++ + 1] = c;
+	res[i + 1] = '\0';
+	free(str);
+	return (res);
+}
+
 char	*ft_expand_str(t_list **env, char *str)
 {
 	char	**vars;
@@ -62,6 +98,7 @@ char	*ft_expand_str(t_list **env, char *str)
 		else
 			res = ft_charjoin(res, str[temp.i++]);
 	}
+	res = ft_frame_str(res, '\'');
 	ft_free((void **)temp.vars);
 	free(temp.str);
 	return (res);
@@ -99,6 +136,11 @@ char	*ft_expand_wildcard(t_list **wd, char *val, t_list **env)
 	i = 0;
 	res = NULL;
 	val = ft_expand_str(env, val);
+	if (val[0] == '\'')
+	{
+		ft_memmove(val, &val[1], ft_strlen(val));
+		val[ft_strlen(val) - 1] = '\0';
+	}
 	ft_wildcard(wd, val);
 	temp = ft_lst_to_tab(wd);
 	if (!temp)

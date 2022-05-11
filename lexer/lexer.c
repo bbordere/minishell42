@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/28 11:47:18 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/11 16:07:47 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ size_t	ft_size_str(char *str, int i)
 		if (ft_issep(str[i + size]))
 		{
 			sep = str[i + size++];
-			while (str[i + size] && str[i + size] != sep && !ft_isspecchar(str[i + size]))
+			while (str[i + size] && str[i + size] != sep)// && !ft_isspecchar(str[i + size]))
 				size++;
 			size++;
 			if (str[i + size] && ft_isspace(str[i + size]))
@@ -69,8 +69,7 @@ size_t	ft_word_size(char *str, size_t i)
 		else if (str[i + 1] && str[i] == '&' && str[i + 1] == '&')
 			return (2);
 		else if (str[i + 1] && ft_ispar(str[i]) || (ft_isspecchar(str[i])
-				&& !ft_isspecchar(str[i + 1])) || ft_isspecchar(str[i + 1])
-			&& str[i + 1] != sep)
+				&& !ft_isspecchar(str[i + 1])) || (ft_isspecchar(str[i]) && str[i + 1] != str[i]))
 			return (1);
 		else if (str[i + 1] && ft_isspecchar(str[i])
 			&& ft_isspecchar(str[i + 1]))
