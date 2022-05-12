@@ -135,7 +135,7 @@ char	**ft_get_cmd(char **command)
 	i = -1;
 	while (command[++i])
 	{
-		if (command[i][0] == '\'')
+		if (command[i][0] == '\'' || command[i][0] == '\"')
 		{
 			ft_memmove(command[i], &command[i][1], ft_strlen(command[i]));
 			command[i][ft_strlen(command[i]) - 1] = '\0';
@@ -347,8 +347,6 @@ void	ft_pipe(t_data *data, t_token **args, t_list **env, int in)
 	{
 		close(fd[0]);
 		dup2(fd[1], data->fd_out);
-		if (in == data->fd_in)
-			exit(EXIT_FAILURE);
 		ft_glhf(data, args, env);
 		close(fd[1]);
 	}

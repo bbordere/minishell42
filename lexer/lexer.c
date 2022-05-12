@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/11 16:07:47 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/12 16:28:01 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ size_t	ft_size_str(char *str, int i)
 	size_t	size;
 	char	sep;
 
-	sep = str[i];
+	if (str[i] == '$' && ft_strlen(&str[i]) != 1)
+		str[i] = 127;
 	size = 0;
 	while (str[i + size] && !ft_isspace(str[i + size]) && !ft_isspecchar(str[i + size]) 
 			&& !ft_ispar(str[i + size]) && !(str[i + size] == '&' && str[i + 1 + size] == '&'))
@@ -62,7 +63,7 @@ size_t	ft_word_size(char *str, size_t i)
 	if (str[i])
 	{
 		sep = str[i];
-		if (str[i + 1] && str[i] == '$' || (str[i] == '&' && str[i + 1] != '&'
+		if (str[i + 1] && str[i] == '$' && !ft_issep(str[i + 1]) || (str[i] == '&' && str[i + 1] != '&'
 				&& !ft_issep(str[i + 1]) && !ft_isspace(str[i + 1])
 				&& !ft_isspecchar(str[i + 1]) && !ft_ispar(str[i + 1])))
 			return (ft_size_var(str, i));

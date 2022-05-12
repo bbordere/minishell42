@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/11 14:45:02 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/12 16:50:12 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,24 +41,6 @@ char	*ft_copy_quotes(char *res, t_temp *temp)
 	return (res);
 }
 
-char	*ft_strncpy(char *dest, char *src, size_t n)
-{
-	size_t	i;
-
-	i = 0;
-	while (src[i] != '\0' && i < n)
-	{
-		dest[i] = src[i];
-		++i;
-	}
-	while (i < n)
-	{
-		dest[i] = '\0';
-		i++;
-	}
-	return (dest);
-}
-
 char	*ft_frame_str(char *str, char c)
 {
 	char	*res;
@@ -75,6 +57,27 @@ char	*ft_frame_str(char *str, char c)
 	res[i + 1] = '\0';
 	free(str);
 	return (res);
+}
+
+char	ft_get_inverted_quote(char *str)
+{
+	char	quote;
+	ssize_t	i;
+
+	i = -1;
+	while (str[++i])
+	{
+		if (str[i] && ft_issep(str[i]))
+		{
+			quote = str[i++];
+			while (str[i] && str[i] != quote)
+				i++;
+		}
+	}
+	if (quote == '\'')
+		return ('\"');
+	else
+		return ('\'');
 }
 
 char	*ft_expand_str(t_list **env, char *str)
@@ -96,9 +99,12 @@ char	*ft_expand_str(t_list **env, char *str)
 			&& str[temp.i + 1] != '$' && !ft_issep(str[temp.i + 1]))
 			res = ft_var(res, &temp);
 		else
-			res = ft_charjoin(res, str[temp.i++]);
+			res = ft_charjoin(res, str[temp.i++]);		
 	}
-	res = ft_frame_str(res, '\'');
+	if (res)
+		res = ft_frame_str(res, ft_get_inverted_quote(res));
+	else
+		res = ft_strdup("\"\"");
 	ft_free((void **)temp.vars);
 	free(temp.str);
 	return (res);

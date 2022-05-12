@@ -62,7 +62,8 @@ char	**ft_extract_var(char *str)
 
 char	*ft_var(char *res, t_temp *temp)
 {
-	res = ft_strjoin2(res, ft_get_var(temp->env, temp->vars[(temp->j)++] + 1));
+	res = ft_strjoin(res, ft_get_var(temp->env, temp->vars[(temp->j)++] + 1));
+	printf("--%s--\n", res);
 	while (temp->str[(temp->i) + 1] && !ft_isspace(temp->str[(temp->i) + 1])
 		&& !ft_isspecchar(temp->str[(temp->i) + 1])
 		&& !ft_issep(temp->str[(temp->i) + 1])
@@ -75,15 +76,15 @@ char	*ft_var(char *res, t_temp *temp)
 
 char	*ft_str_var(char *res, t_temp *temp)
 {
-	(temp->i)++;
-	while (temp->str[(temp->i)] && temp->str[(temp->i)] != '\"')
+	// (temp->i)++;
+	while (temp->str[++(temp->i)] && temp->str[(temp->i)] != '\"')
 	{
 		if (temp->str[(temp->i) + 1] && temp->str[(temp->i)] == '$'
 			&& temp->str[(temp->i) + 1] != '$'
 			&& !ft_issep(temp->str[(temp->i) + 1]))
 			res = ft_var(res, temp);
 		else
-			res = ft_charjoin(res, temp->str[(temp->i)++]);
+			res = ft_charjoin(res, temp->str[(temp->i++)]);
 	}
 	(temp->i)++;
 	return (res);
