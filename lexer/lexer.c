@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/12 16:28:01 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/13 11:09:19 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,19 +57,17 @@ size_t	ft_size_var(char *str, size_t i)
 size_t	ft_word_size(char *str, size_t i)
 {
 	size_t	size;
-	char	sep;
 
 	size = 0;
 	if (str[i])
 	{
-		sep = str[i];
-		if (str[i + 1] && str[i] == '$' && !ft_issep(str[i + 1]) || (str[i] == '&' && str[i + 1] != '&'
+		if ((str[i + 1] && str[i] == '$' && !ft_issep(str[i + 1])) || (str[i] == '&' && str[i + 1] != '&'
 				&& !ft_issep(str[i + 1]) && !ft_isspace(str[i + 1])
 				&& !ft_isspecchar(str[i + 1]) && !ft_ispar(str[i + 1])))
 			return (ft_size_var(str, i));
 		else if (str[i + 1] && str[i] == '&' && str[i + 1] == '&')
 			return (2);
-		else if (str[i + 1] && ft_ispar(str[i]) || (ft_isspecchar(str[i])
+		else if ((str[i + 1] && ft_ispar(str[i])) || (ft_isspecchar(str[i])
 				&& !ft_isspecchar(str[i + 1])) || (ft_isspecchar(str[i]) && str[i + 1] != str[i]))
 			return (1);
 		else if (str[i + 1] && ft_isspecchar(str[i])
@@ -107,7 +105,6 @@ char	**ft_lexer(char *str)
 	size_t	i;
 	size_t	j;
 	size_t	nb;
-	char	*temp;
 
 	i = 0;
 	j = 0;

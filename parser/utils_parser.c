@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:21:42 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/20 15:30:53 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/13 11:10:50 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,4 +43,5 @@ int	ft_check_op(t_token **tokens, size_t	i)
 			&& ft_isvalidtype(tokens[i + 1]->type));
 	else if (tokens[i]->type == R_APPEND)
 		return (ft_isvalidtype(tokens[i + 1]->type));
+	return (0);
 }

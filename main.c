@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/12 21:19:02 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/13 12:04:32 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ t_list	**ft_init_env(t_list **env, char **envp)
 	size_t	i;
 	t_list	*temp;
 	char	*value;
-	int		lenght;
 
 	env = malloc(sizeof(t_list));
 	if (!env)
@@ -39,7 +38,6 @@ t_list	**ft_init_env(t_list **env, char **envp)
 	while (temp)
 	{
 		value = temp->content;
-		lenght = ft_strlen(value);
 		temp->content = ft_strdup(value);
 		temp = temp->next;
 	}
@@ -180,6 +178,8 @@ char	*ft_prompt(t_list **env)
 	char	*pwd;
 	char	*home;
 
+	if (!*env)
+		return (ft_strdup("minishell > "));
 	pwd = ft_get_var(env, "PWD");
 	home = ft_get_var(env, "HOME");
 	prompt = ft_strjoin("\033[0;32m", ft_strjoin(ft_charjoin(ft_get_var(env, "LOGNAME"), '@'), "minishell\033[0;37m:\033[0;34m"));
@@ -201,6 +201,8 @@ int main(int ac, char **av, char **env)
 	char	**regrouped; // Tableau des strings "regroupees"
 	char	*prompt;
 	
+	(void)ac;
+	(void)av;
 	data = ft_init_data(env);
 	while (1)
 	{
@@ -214,7 +216,7 @@ int main(int ac, char **av, char **env)
 		// input = readline("> ");
 		if (!input)
 			break ;
-		if (ft_strcmp(input, "\n"))
+		if (*input)
 		{
 			add_history(input);
 			lexed = ft_lexer(input);

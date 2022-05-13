@@ -12,12 +12,12 @@
 
 #include "expansions.h"
 
-void	*ft_return_dup(char *str, char *dup)
-{
-	if (!dup)
-		return (NULL);
-	return (ft_strdup(dup));
-}
+// void	*ft_return_dup(char *str, char *dup)
+// {
+// 	if (!dup)
+// 		return (NULL);
+// 	return (ft_strdup(dup));
+// }
 
 size_t	ft_count_vars(char *str)
 {

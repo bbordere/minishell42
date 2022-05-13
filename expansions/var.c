@@ -19,7 +19,7 @@ char	*ft_get_var(t_list **env, char *str)
 	char	*content;
 
 	if (!env || !(*env))
-		return (ft_return_dup(str, NULL));
+		return (ft_strdup(NULL));
 	if (!ft_strcmp(str, "?"))
 		return (ft_expand_return_code(str));
 	temp = *env;
@@ -28,10 +28,10 @@ char	*ft_get_var(t_list **env, char *str)
 	{
 		content = temp->content;
 		if (!ft_strncmp(str, content, len) && content[len] == '=')
-			return (ft_return_dup(str, &content[len + 1]));
+			return (ft_strdup(&content[len + 1]));
 		temp = temp->next;
 	}
-	return (ft_return_dup(str, ""));
+	return (ft_strdup(""));
 }
 
 char	**ft_extract_var(char *str)

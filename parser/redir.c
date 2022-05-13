@@ -128,7 +128,7 @@ void	ft_free_command_norme(char *arg)
 	exit(EXIT_FAILURE);
 }
 
-char	**ft_get_cmd(char **command)
+void	ft_get_cmd(char **command)
 {
 	ssize_t	i;
 
@@ -146,7 +146,6 @@ char	**ft_get_cmd(char **command)
 void	ft_exec(t_list **env, char *arg)
 {
 	char	**command;
-	char	**envp;
 	char	*path;
 
 	command = ft_lexer(arg);
@@ -180,14 +179,14 @@ void	ft_here_doc(char *limiter, char *line, int fd, int len)
 		if (!line)
 		{
 			if (close(fd))
-				; //error close
+				continue; //error close
 			return ;
 			//warning error
 		}
 		if (!ft_strncmp(line, limiter, len) && line[len] == '\n')
 		{
 			if (close(fd))
-				; //error close
+				continue; //error close
 			free(line);
 			return ;
 		}
@@ -203,6 +202,7 @@ void	ft_get_doc(char *limiter, int nb_heredoc)
 	int		fd;
 	char	*name;
 
+	line = NULL;
 	name = ft_strjoin("/tmp/minishell", ft_itoa(nb_heredoc));
 	fd = open(name, O_RDWR | O_CREAT | O_TRUNC, 0644);
 	if (fd == -1)
@@ -252,7 +252,7 @@ void	ft_redirection(t_data *data, t_token **args)
 	}
 }
 
-char	*ft_join_word(t_token **args, t_list **env)
+char	*ft_join_word(t_token **args)
 {
 	int		i;
 	char	*cmd;
@@ -310,7 +310,7 @@ void	ft_glhf(t_data *data, t_token **args, t_list **env)
 
 	ft_redirection(data, args);
 	ft_check_last_heredoc(data, args);
-	cmd = ft_join_word(args, env);
+	cmd = ft_join_word(args);
 	ft_exec(env, cmd);
 }
 
@@ -332,7 +332,6 @@ void	ft_fork(t_data *data, t_token **args, t_list **env)
 
 void	ft_pipe(t_data *data, t_token **args, t_list **env, int in)
 {
-	char	*cmd;
 	int		pid;
 	int		fd[2];
 

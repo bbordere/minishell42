@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/30 14:46:39 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/12 12:27:30 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/13 11:13:40 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,22 +61,27 @@ int	ft_check_quotes(t_token	*token, char *quote)
 
 int	ft_check_grammar(t_token **tokens)
 {
-	size_t	i;
+	ssize_t	i;
 	char	quote;
 
-	i = 0;
-	while (tokens[i])
+	i = -1;
+	while (tokens[++i])
 	{
 		if (ft_isop(tokens[i]->type))
+		{
 			if (!ft_check_op(tokens, i))
 				return (printf("%s'%s'\n", ERROR_MSG, tokens[i]->val), 0);
+		}
 		if (tokens[i]->type == R_HERE_DOC || tokens[i]->type == R_IN)
+		{
 			if (!ft_check_here_doc(tokens, i))
 				return (printf("%s'%s'\n", ERROR_MSG, tokens[i]->val), 0);
+		}
 		if (tokens[i]->type == S_QUOTE || tokens[i]->type == D_QUOTE)
+		{
 			if (!ft_check_quotes(tokens[i], &quote))
 				return (printf("minishell: unexpected EOF while	looking for matching \'%c\'\n", quote), 0);
-			i++;
+		}
 	}
 	return (1);
 }

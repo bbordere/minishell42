@@ -149,7 +149,27 @@ void	ft_check_wildcard(t_list **wd, char **tab, char *name)
 	ft_lstadd_back(wd, ft_lstnew(ft_strdup(name)));
 }
 
-void	ft_sort_lst(t_list **wd)
+#define CL_TABLE "0123456789aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ"
+
+int		ft_comp(char *s1, char *s2)
+{
+	size_t	i;
+	char	*table;
+
+	table = ft_strdup(CL_TABLE);
+	if (!s1 || !s2)
+		return (0);
+	i = 0;
+	while (s1[i] == s2[i])
+	{
+		if (!s1[i] && !s2[i])
+			return (0);
+		i++;
+	}
+	return (ft_get_index(table, s1[i]) - ft_get_index(table, s2[i]));
+}
+
+void	ft_sort_lst(t_list **wd, int (*comp)(char *, char *))
 {
 	t_list	*temp;
 	t_list	*save;
@@ -162,7 +182,7 @@ void	ft_sort_lst(t_list **wd)
 		str = "~";
 		while (temp)
 		{
-			if (ft_strcmp(temp->content, str) < 0)
+			if (comp(temp->content, str) < 0)
 			{
 				str = temp->content;
 				temp->content = save->content;
@@ -192,11 +212,12 @@ int	ft_wildcard(t_list **wd, char *str)
 		return (ft_free_tab((void **)tab), 0);
 	while (fichier)
 	{
-		ft_check_wildcard(wd, tab, fichier->d_name);
+		if (fichier->d_name[0] != '.')
+			ft_check_wildcard(wd, tab, fichier->d_name);
 		fichier = readdir(dir);
 	}
 	ft_free_tab((void **)tab);
-	ft_sort_lst(wd);
+	ft_sort_lst(wd, strcasecmp); //BB swap bb (case opp) Bb > bB 
 	if (!closedir(dir))
 		return (0);
 	return (1);
