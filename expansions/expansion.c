@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/12 16:50:12 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/12 21:26:02 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,10 +96,11 @@ char	*ft_expand_str(t_list **env, char *str)
 		else if (str[temp.i] == '\'')
 			res = ft_copy_quotes(res, &temp);
 		else if (str[temp.i + 1] && str[temp.i] == '$'
-			&& str[temp.i + 1] != '$' && !ft_issep(str[temp.i + 1]))
+			&& str[temp.i + 1] != '$' && !ft_issep(str[temp.i + 1])
+			&& !ft_isspace(str[temp.i + 1]) && !ft_isspecchar(str[temp.i + 1]))
 			res = ft_var(res, &temp);
 		else
-			res = ft_charjoin(res, str[temp.i++]);		
+			res = ft_charjoin(res, str[temp.i++]);
 	}
 	if (res)
 		res = ft_frame_str(res, ft_get_inverted_quote(res));

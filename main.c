@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/12 16:29:51 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/12 21:19:02 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,15 +229,15 @@ int main(int ac, char **av, char **env)
 
 			ft_update_type(tokens, 0);
 			ft_expand(tokens, data->env, data->wd);
-			int i = 0;
-			while (tokens[i])
-			{
-				printf("%s : %d\n", tokens[i]->val, tokens[i]->type);
-				i++;
-			}
-			// regrouped = ft_join(tokens);
-			// final = ft_tokenize(regrouped);
-			// ft_update_type(final, 1);
+			// int i = 0;
+			// while (tokens[i])
+			// {
+			// 	printf("%s : %d\n", tokens[i]->val, tokens[i]->type);
+			// 	i++;
+			// }
+			regrouped = ft_join(tokens);
+			final = ft_tokenize(regrouped);
+			ft_update_type(final, 1);
 			// int i = 0;
 			// while (lexed[i])
 			// {
@@ -247,7 +247,7 @@ int main(int ac, char **av, char **env)
 
 
 			// ft_check_builtin(final);  //Desactiver pour les tests de pipes
-			// ft_check_separator(data, final, data->env); // Changer le nom de la fonction
+			ft_check_separator(data, final, data->env); // Changer le nom de la fonction
 			ft_free_loop((void **)lexed, (void **)regrouped, tokens, final);
 		}
 		free(prompt);

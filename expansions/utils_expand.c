@@ -28,7 +28,9 @@ size_t	ft_count_vars(char *str)
 	i = 0;
 	while (str[i])
 	{
-		if (str[i + 1] && str[i] == '$' && str[i + 1] != '$')
+		if (str[i + 1] && str[i] == '$' && str[i + 1] != '$'
+			&& !ft_issep(str[i + 1]) && !ft_isspace(str[i + 1])
+			&& !ft_isspecchar(str[i + 1]))
 		{
 			while (str[i] && !ft_isspace(str[i]) && !ft_isspecchar(str[i])
 				&& !ft_issep(str[i]) && str[i] != '$' && !ft_ispar(str[i]))
