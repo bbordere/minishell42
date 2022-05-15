@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/23 12:07:21 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/13 11:09:19 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/14 19:07:49 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ size_t	ft_size_str(char *str, int i)
 
 	if (str[i] == '$' && ft_strlen(&str[i]) != 1)
 		str[i] = 127;
+	if (ft_strlen(str) == 1)
+		return (1);
 	size = 0;
 	while (str[i + size] && !ft_isspace(str[i + size]) && !ft_isspecchar(str[i + size]) 
 			&& !ft_ispar(str[i + size]) && !(str[i + size] == '&' && str[i + 1 + size] == '&'))
@@ -28,7 +30,8 @@ size_t	ft_size_str(char *str, int i)
 			sep = str[i + size++];
 			while (str[i + size] && str[i + size] != sep)// && !ft_isspecchar(str[i + size]))
 				size++;
-			size++;
+			if (str[i + size])
+				size++;
 			if (str[i + size] && ft_isspace(str[i + size]))
 				break ;
 		}

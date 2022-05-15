@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/13 12:04:32 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/15 11:28:09 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ t_data	*ft_init_data(char **envp)
 	data->wd = ft_init_wd(data->wd);
 	if (!data->wd)
 		return (NULL);
-	data->fd_in = dup(STDIN_FILENO);
-	data->fd_out = dup(STDOUT_FILENO);
+	data->fd_in = STDIN_FILENO;
+	data->fd_out = STDOUT_FILENO;
 	data->rtn_val = 0;
 	data->nb_heredoc = 0;
 	data->act_heredoc = -1;
@@ -221,6 +221,7 @@ int main(int ac, char **av, char **env)
 			add_history(input);
 			lexed = ft_lexer(input);
 			tokens = ft_tokenize(lexed);
+
 			if (!ft_check_grammar(tokens)) // Renvoie le msg d'erreur dans la fonction ft_check_grammar
 			{
 				ft_free((void **)lexed);
@@ -231,23 +232,22 @@ int main(int ac, char **av, char **env)
 
 			ft_update_type(tokens, 0);
 			ft_expand(tokens, data->env, data->wd);
-			// int i = 0;
-			// while (tokens[i])
-			// {
-			// 	printf("%s : %d\n", tokens[i]->val, tokens[i]->type);
-			// 	i++;
-			// }
 			regrouped = ft_join(tokens);
 			final = ft_tokenize(regrouped);
 			ft_update_type(final, 1);
+			// int i = 0;
+			// while (tokens[i])
+			// {
+			// 	printf("%s : %d -%d-\n", tokens[i]->val, tokens[i]->type, ft_strcmp(tokens[i]->val, "\'\'"));
+			// 	i++;
+			// }
+
 			// int i = 0;
 			// while (lexed[i])
 			// {
 			// 	printf("%s\n", lexed[i]);
 			// 	i++;
 			// }
-
-
 			// ft_check_builtin(final);  //Desactiver pour les tests de pipes
 			ft_check_separator(data, final, data->env); // Changer le nom de la fonction
 			ft_free_loop((void **)lexed, (void **)regrouped, tokens, final);

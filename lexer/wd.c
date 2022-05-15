@@ -149,24 +149,15 @@ void	ft_check_wildcard(t_list **wd, char **tab, char *name)
 	ft_lstadd_back(wd, ft_lstnew(ft_strdup(name)));
 }
 
-#define CL_TABLE "0123456789aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ"
-
-int		ft_comp(char *s1, char *s2)
+int		ft_strcasecmp(char *s1, char *s2)
 {
-	size_t	i;
-	char	*table;
+	int		i;
 
-	table = ft_strdup(CL_TABLE);
-	if (!s1 || !s2)
-		return (0);
 	i = 0;
-	while (s1[i] == s2[i])
-	{
-		if (!s1[i] && !s2[i])
-			return (0);
+	while (s1[i] && s2[i] && 
+		ft_tolower(s1[i]) == ft_tolower(s2[i]))
 		i++;
-	}
-	return (ft_get_index(table, s1[i]) - ft_get_index(table, s2[i]));
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
 void	ft_sort_lst(t_list **wd, int (*comp)(char *, char *))
@@ -217,7 +208,7 @@ int	ft_wildcard(t_list **wd, char *str)
 		fichier = readdir(dir);
 	}
 	ft_free_tab((void **)tab);
-	ft_sort_lst(wd, strcasecmp); //BB swap bb (case opp) Bb > bB 
+	ft_sort_lst(wd, ft_strcasecmp); //BB swap bb (case opp) Bb > bB 
 	if (!closedir(dir))
 		return (0);
 	return (1);

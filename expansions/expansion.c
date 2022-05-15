@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/12 21:26:02 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/15 23:54:58 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	*ft_expand_return_code(char *str)
 
 	res = ft_strjoin2(ft_strdup("{RETURN CODE}"), ft_strdup(&str[1]));
 	return (res);
-}
+} 
 
 char	**ft_init_expand(char **res, char *str, t_temp *temp, t_list	**env)
 {
@@ -34,7 +34,7 @@ char	**ft_init_expand(char **res, char *str, t_temp *temp, t_list	**env)
 
 char	*ft_copy_quotes(char *res, t_temp *temp)
 {
-	res = ft_strjoin2(res, ft_get_str(&temp->str[(temp->i++)], 0));
+	res = ft_strjoin(res, ft_get_str(&temp->str[(temp->i++)], 0));
 	while (temp->str[temp->i] && temp->str[temp->i] != '\'')
 		temp->i++;
 	temp->i++;
@@ -46,6 +46,10 @@ char	*ft_frame_str(char *str, char c)
 	char	*res;
 	ssize_t	i;
 
+	if (!str)
+		return (ft_strdup("\"\""));
+	if (!*str)
+		return (str);
 	res = malloc(sizeof(char) * (ft_strlen(str) + 3));
 	if (!res)
 		return (NULL);
@@ -64,7 +68,10 @@ char	ft_get_inverted_quote(char *str)
 	char	quote;
 	ssize_t	i;
 
+	if (!str)
+		return ('\"');
 	i = -1;
+	quote = str[0];
 	while (str[++i])
 	{
 		if (str[i] && ft_issep(str[i]))
@@ -78,6 +85,11 @@ char	ft_get_inverted_quote(char *str)
 		return ('\"');
 	else
 		return ('\'');
+}
+
+int	ft_is_valid_var_char(int c)
+{
+	return (c != '$' && !ft_issep(c) && !ft_ispar(c) && !ft_isspace(c) && !ft_isspecchar(c) && (ft_isalnum(c) || c == '_'));
 }
 
 char	*ft_expand_str(t_list **env, char *str)
@@ -95,17 +107,19 @@ char	*ft_expand_str(t_list **env, char *str)
 			res = ft_str_var(res, &temp);
 		else if (str[temp.i] == '\'')
 			res = ft_copy_quotes(res, &temp);
-		else if (str[temp.i + 1] && str[temp.i] == '$'
-			&& str[temp.i + 1] != '$' && !ft_issep(str[temp.i + 1])
-			&& !ft_isspace(str[temp.i + 1]) && !ft_isspecchar(str[temp.i + 1]))
+		// else if (str[temp.i + 1] && str[temp.i] == '$'
+		// 	&& str[temp.i + 1] != '$' && !ft_issep(str[temp.i + 1])
+		// 	&& !ft_isspace(str[temp.i + 1]) && !ft_isspecchar(str[temp.i + 1]))
+		// 	res = ft_var(res, &temp);
+		else if (str[temp.i + 1] && str[temp.i] == '$' && (ft_is_valid_var_char(str[temp.i + 1]) || str[temp.i + 1] == '?'))
 			res = ft_var(res, &temp);
+		else if (str[temp.i] == '$' && ft_issep(str[temp.i + 1]))
+			temp.i++;
+			// res = ft_strjoin(res, ft_get_var(env, "HOME"));
 		else
 			res = ft_charjoin(res, str[temp.i++]);
 	}
-	if (res)
-		res = ft_frame_str(res, ft_get_inverted_quote(res));
-	else
-		res = ft_strdup("\"\"");
+	res = ft_frame_str(res, ft_get_inverted_quote(res));
 	ft_free((void **)temp.vars);
 	free(temp.str);
 	return (res);

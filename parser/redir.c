@@ -137,6 +137,8 @@ void	ft_get_cmd(char **command)
 	{
 		if (command[i][0] == '\'' || command[i][0] == '\"')
 		{
+			if (command[i][ft_strlen(command[i]) - 2] == command[i][ft_strlen(command[i]) - 3])
+				command[i][ft_strlen(command[i]) - 1] = '\0';
 			ft_memmove(command[i], &command[i][1], ft_strlen(command[i]));
 			command[i][ft_strlen(command[i]) - 1] = '\0';
 		}

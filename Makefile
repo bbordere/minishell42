@@ -16,7 +16,7 @@ CC = gcc
 
 CFLAGS = -g3 #-Wall -Werror -Wextra
 
-FILES =  $(wildcard lexer/*.c) $(wildcard parser/*.c) $(wildcard expansions/*.c) main.c
+FILES =  $(wildcard lexer/*.c) $(wildcard parser/*.c) $(wildcard expansions/*.c) $(wildcard builtin/*.c) main.c
 
 OBJS = $(FILES:.c=.o)
 

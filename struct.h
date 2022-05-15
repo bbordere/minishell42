@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:14:11 by bbordere          #+#    #+#             */
-/*   Updated: 2022/04/26 19:50:20 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/15 11:00:56 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,8 @@ typedef struct s_token
 }	t_token;
 
 typedef struct s_data{
-	t_list		**env;
-	t_list		**wd;
+	t_list	**env;
+	t_list	**wd;
 	int		fd_in;
 	int		fd_out;
 	int		rtn_val;

@@ -44,5 +44,5 @@ int				ft_isspecchar(int c);
 int				ft_ispar(int c);
 int				ft_issep(int c);
 int				ft_wildcard(t_list **wd, char *str);
-
+int				ft_is_valid_var_char(int c);
 #endif
