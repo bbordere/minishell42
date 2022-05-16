@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/15 23:54:58 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/16 13:15:00 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,8 @@ char	ft_get_inverted_quote(char *str)
 
 int	ft_is_valid_var_char(int c)
 {
-	return (c != '$' && !ft_issep(c) && !ft_ispar(c) && !ft_isspace(c) && !ft_isspecchar(c) && (ft_isalnum(c) || c == '_'));
+	return (c != '$' && !ft_issep(c) && !ft_ispar(c) && !ft_isspace(c)
+		&& !ft_isspecchar(c) && (ft_isalnum(c) || c == '_'));
 }
 
 char	*ft_expand_str(t_list **env, char *str)

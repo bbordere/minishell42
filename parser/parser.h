@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:20:53 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/12 12:25:07 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/16 14:51:45 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,5 +30,7 @@ int		ft_check_grammar(t_token **tokens);
 int		ft_check_quotes(t_token	*token, char *quote);
 int		ft_check_here_doc(t_token **tokens, size_t i);
 void	ft_check_builtin(t_token **tokens);
+size_t	ft_count_pipes(t_token	**tokens, size_t *offset);
+void	ft_pipeline(t_data *data, t_token **tokens);
 
 #endif

@@ -100,7 +100,7 @@ char	*ft_get_str(char *str, int mode)
 	size_t	i;
 	char	*res;
 
-	res = NULL;
+	res = ft_charjoin(NULL, 127);
 	i = 1;
 	while (str[i] && str[i] != '\'')
 	{
