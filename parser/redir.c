@@ -97,8 +97,7 @@ char	*ft_search_path(t_list **env, char *cmd)
 	char	*command;
 	t_list	*temp;
 
-	//check builtin
-	if (!access(cmd, 0))
+	if (!access(cmd, X_OK|F_OK))
 		return (cmd);
 	if (!env || !(*env))
 		return (NULL);
@@ -166,7 +165,7 @@ void	ft_exec(t_list **env, char *arg)
 	{
 		ft_command_not_found(command[0]);
 		ft_free_tab((void **)command);
-		free(path);
+		// free(path);
 		exit(EXIT_FAILURE);
 	}
 	ft_free_tab((void **)command);
@@ -252,6 +251,12 @@ void	ft_redirection(t_data *data, t_token **args)
 			ft_rd_append(data, args[++i]->val);
 		i++;
 	}
+}
+
+int		ft_isredir(t_token *token)
+{
+	return (token->type == R_APPEND || token->type == R_HERE_DOC || token->type == R_IN|| token->type == R_OUT
+		|| token->type == OUT_A_FILE || token->type == OUT_FILE || token->type == IN_FILE || token->type == DELIMITER);
 }
 
 char	*ft_join_word(t_token **args)
@@ -361,43 +366,33 @@ void	ft_pipe(t_data *data, t_token **args, t_list **env, int in)
 		close(in);
 }
 
-int	ft_check_isapipe(t_token **args, int *i)
-{
-	while (args[*i] && (args[*i]->type != D_PIPE || args[*i]->type != D_AND))
-	{
-		(*i)++;
-		if (args[*i] && args[*i]->type == PIPE)
-			return (1);
-	}
-	return (0);
-}
 
-void	ft_check_separator(t_data *data, t_token **args, t_list **env)
-{
-	int	i;
-	int	j;
+// void	ft_check_separator(t_data *data, t_token **args, t_list **env)
+// {
+// 	int	i;
+// 	int	j;
 
-	i = 0;
-	j = 0;
-	ft_find_heredoc(data, args);
-	while (args[i])
-	{
-		while (args[i] && args[i]->type != PIPE
-			&& args[i]->type != D_PIPE && args[i]->type != D_AND)
-			i++;
-		if (!args[i] || (args[i]
-				&& (args[i]->type == D_PIPE && data->rtn_val != 0))
-			|| (args[i] && (args[i]->type == D_AND && data->rtn_val == 0)))
-			ft_fork(data, &args[j], env);
-		if (args[i] && args[i]->type == PIPE)
-		{
-			ft_pipe(data, &args[j], env, data->fd_in);
-			while (ft_check_isapipe(args, &i))
-				ft_pipe(data, &args[i++], env, data->fd_out);
-			ft_fork(data, &args[j], env);
-		}
-		if (args[i])
-			i++;
-		j = i;
-	}
-}
+// 	i = 0;
+// 	j = 0;
+// 	ft_find_heredoc(data, args);
+// 	while (args[i])
+// 	{
+// 		while (args[i] && args[i]->type != PIPE
+// 			&& args[i]->type != D_PIPE && args[i]->type != D_AND)
+// 			i++;
+// 		if (!args[i] || (args[i]
+// 				&& (args[i]->type == D_PIPE && data->rtn_val != 0))
+// 			|| (args[i] && (args[i]->type == D_AND && data->rtn_val == 0)))
+// 			ft_fork(data, &args[j], env);
+// 		if (args[i] && args[i]->type == PIPE)
+// 		{
+// 			ft_pipe(data, &args[j], env, data->fd_in);
+// 			while (ft_check_isapipe(args, &i))
+// 				ft_pipe(data, &args[i++], env, data->fd_out);
+// 			ft_fork(data, &args[j], env);
+// 		}
+// 		if (args[i])
+// 			i++;
+// 		j = i;
+// 	}
+// }

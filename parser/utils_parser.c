@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:21:42 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/15 10:49:37 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/17 21:49:12 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ size_t	ft_tab_size(t_token	**tokens)
 int	ft_isvalidtype(int type)
 {
 	return (type == S_QUOTE || type == D_QUOTE || type == WORD || type == ARGS
-		|| type == VAR || type == OUT_FILE || type == OUT_A_FILE);
+		|| type == VAR || type == OUT_FILE || type == OUT_A_FILE || type == WILDCARD);
 }
 
 int	ft_check_op(t_token **tokens, size_t i)

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/16 17:10:54 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/17 21:53:49 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ t_data	*ft_init_data(char **envp)
 	data->wd = ft_init_wd(data->wd);
 	if (!data->wd)
 		return (NULL);
-	data->fd_in = dup(STDIN_FILENO);
-	data->fd_out = dup(STDOUT_FILENO);
+	data->fd_in = STDIN_FILENO;
+	data->fd_out = STDOUT_FILENO;
 	data->rtn_val = 0;
 	data->nb_heredoc = 0;
 	data->act_heredoc = -1;
@@ -183,6 +183,7 @@ char	*ft_prompt(t_list **env)
 	if (!*env)
 		return (ft_strdup("minishell > "));
 	pwd = ft_get_var(env, "PWD");
+	pwd = ft_strrchr(pwd, '/') + 1;
 	home = ft_get_var(env, "HOME");
 	prompt = ft_strjoin("\033[0;32m", ft_strjoin(ft_charjoin(ft_get_var(env, "LOGNAME"), '@'), "minishell\033[0;37m:\033[0;34m"));
 	if (ft_strstr(pwd, home))
@@ -205,6 +206,7 @@ int main(int ac, char **av, char **env)
 	
 	(void)ac;
 	(void)av;
+
 	data = ft_init_data(env);
 	while (1)
 	{
@@ -215,7 +217,7 @@ int main(int ac, char **av, char **env)
 		regrouped = NULL;
 		prompt = ft_prompt(data->env);
 		input = readline(prompt);
-		// input = readline("> ");
+		// input = readline("$> ");
 		if (!input)
 			break ;
 		if (*input)
