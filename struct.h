@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:14:11 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/16 14:23:25 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/18 17:37:43 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ typedef struct s_data{
 	int		rtn_val;
 	int		nb_heredoc;
 	int		act_heredoc;
+	int		nb_pipes;
 }	t_data;
 
 typedef struct s_temp

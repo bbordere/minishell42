@@ -14,7 +14,7 @@
 
 char	**ft_lst_to_tab(t_list **lst);
 
-void	ft_rd_in(t_data *data, char *arg)
+void	ft_rd_in(t_data *data, char *arg, int i)
 {
 	int	newfd;
 
@@ -26,14 +26,13 @@ void	ft_rd_in(t_data *data, char *arg)
 		ft_putstr_fd(": Not such file or directory\n", 2);// a changer
 		exit(EXIT_FAILURE);
 	}
-	if (dup2(newfd, data->fd_in) == -1)
-	{
-		perror("dup2");
-		exit(EXIT_FAILURE);
-	}
+	if (i == 0)
+		data->fd_in = newfd;
+	else
+		data->pipes[i - 1][0] = newfd;
 }
 
-void	ft_rd_out(t_data *data, char *arg)
+void	ft_rd_out(t_data *data, char *arg, int i)
 {
 	int	newfd;
 
@@ -45,14 +44,13 @@ void	ft_rd_out(t_data *data, char *arg)
 		ft_putstr_fd(": Not such file or directory\n", 2);// a changer
 		exit(EXIT_FAILURE);
 	}
-	if (dup2(newfd, data->fd_out) == -1)
-	{
-		perror("dup2");
-		exit(EXIT_FAILURE);
-	}
+	if (i == data->nb_pipes)
+		data->fd_out = newfd;
+	else
+		data->pipes[i][1] = newfd;
 }
 
-void	ft_rd_append(t_data *data, char *arg)
+void	ft_rd_append(t_data *data, char *arg, int i)
 {
 	int	newfd;
 
@@ -64,11 +62,10 @@ void	ft_rd_append(t_data *data, char *arg)
 		ft_putstr_fd(": Not such file or directory\n", 2);// a changer
 		exit(EXIT_FAILURE);
 	}
-	if (dup2(newfd, data->fd_out) == -1)
-	{
-		perror("dup2");
-		exit(EXIT_FAILURE);
-	}
+	if (i == data->nb_pipes)
+		data->fd_out = newfd;
+	else
+		data->pipes[i][1] = newfd;
 }
 
 char	*ft_check_path(char **paths, char *cmd)
@@ -235,7 +232,7 @@ void	ft_find_heredoc(t_data *data, t_token **args)
 	data->nb_heredoc = nb_heredoc;
 }
 
-void	ft_redirection(t_data *data, t_token **args)
+void	ft_redirection(t_data *data, t_token **args, int index)
 {
 	int	i;
 
@@ -244,11 +241,11 @@ void	ft_redirection(t_data *data, t_token **args)
 		&& args[i]->type != D_PIPE && args[i]->type != D_AND)
 	{
 		if (args[i]->type == R_IN)
-			ft_rd_in(data, args[++i]->val);
+			ft_rd_in(data, args[++i]->val, index);
 		if (args[i]->type == R_OUT)
-			ft_rd_out(data, args[++i]->val);
+			ft_rd_out(data, args[++i]->val, index);
 		if (args[i]->type == R_APPEND)
-			ft_rd_append(data, args[++i]->val);
+			ft_rd_append(data, args[++i]->val, index);
 		i++;
 	}
 }
@@ -307,92 +304,6 @@ void	ft_check_last_heredoc(t_data *data, t_token **args)
 	}
 	name = ft_strjoin("/tmp/minishell", ft_itoa(data->act_heredoc));
 	if (cnth > cnti && cnth != 0)
-		ft_rd_in(data, name);
+		ft_rd_in(data, name, 0);
 	free(name);
 }
-
-void	ft_glhf(t_data *data, t_token **args, t_list **env)
-{
-	char	*cmd;
-
-	ft_redirection(data, args);
-	ft_check_last_heredoc(data, args);
-	cmd = ft_join_word(args);
-	ft_exec(env, cmd);
-}
-
-void	ft_fork(t_data *data, t_token **args, t_list **env)
-{
-	int	pid;
-
-	pid = fork();
-	if (pid == -1)
-		exit(EXIT_FAILURE);
-	if (!args || !(*args)) // !args[1]
-		exit(EXIT_FAILURE);
-	if (!pid)
-		ft_glhf(data, args, env);
-	else
-		waitpid(pid, NULL, 0);
-}
-
-
-void	ft_pipe(t_data *data, t_token **args, t_list **env, int in)
-{
-	int		pid;
-	int		fd[2];
-
-	if (pipe(fd) < 0)
-		return ;
-	pid = fork();
-	if (pid == -1)
-		exit(EXIT_FAILURE);
-	if (!args || !(*args)) // !args[1]
-		exit(EXIT_FAILURE);
-	if (!pid)
-	{
-		close(fd[0]);
-		dup2(fd[1], data->fd_out);
-		ft_glhf(data, args, env);
-		close(fd[1]);
-	}
-	else
-	{
-		close(fd[1]);
-		dup2(fd[0], data->fd_in);
-		close(fd[0]);
-	}
-	if (in != data->fd_out)
-		close(in);
-}
-
-
-// void	ft_check_separator(t_data *data, t_token **args, t_list **env)
-// {
-// 	int	i;
-// 	int	j;
-
-// 	i = 0;
-// 	j = 0;
-// 	ft_find_heredoc(data, args);
-// 	while (args[i])
-// 	{
-// 		while (args[i] && args[i]->type != PIPE
-// 			&& args[i]->type != D_PIPE && args[i]->type != D_AND)
-// 			i++;
-// 		if (!args[i] || (args[i]
-// 				&& (args[i]->type == D_PIPE && data->rtn_val != 0))
-// 			|| (args[i] && (args[i]->type == D_AND && data->rtn_val == 0)))
-// 			ft_fork(data, &args[j], env);
-// 		if (args[i] && args[i]->type == PIPE)
-// 		{
-// 			ft_pipe(data, &args[j], env, data->fd_in);
-// 			while (ft_check_isapipe(args, &i))
-// 				ft_pipe(data, &args[i++], env, data->fd_out);
-// 			ft_fork(data, &args[j], env);
-// 		}
-// 		if (args[i])
-// 			i++;
-// 		j = i;
-// 	}
-// }

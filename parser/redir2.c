@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/16 13:41:13 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/17 22:50:48 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/18 17:54:54 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	ft_find_heredoc(t_data *data, t_token **args);
 void	ft_exec(t_list **env, char *arg);
 char	*ft_join_word(t_token **args);
 void	ft_check_last_heredoc(t_data *data, t_token **args);
-void	ft_redirection(t_data *data, t_token **args);
+void	ft_redirection(t_data *data, t_token **args, size_t i);
 
 pid_t	*ft_update_childs(t_data *data, size_t n)
 {
@@ -72,7 +72,7 @@ void	ft_exec_first(t_data *data, t_token **args)
 	if (!data->childs[0])
 	{
 		close(data->pipes[0][0]);
-		ft_redirection(data, args);
+		ft_redirection(data, args, 0);
 		ft_check_last_heredoc(data, args);
 		cmd = ft_join_word(args);
 		dup2(data->fd_in, STDIN_FILENO);
@@ -99,7 +99,7 @@ void	ft_exec_mid(t_data *data, t_token **args, int i)
 	if (!data->childs[i])
 	{
 		close(data->pipes[i][0]);
-		ft_redirection(data, args);
+		ft_redirection(data, args, i); 
 		ft_check_last_heredoc(data, args);
 		cmd = ft_join_word(args);
 		dup2(data->pipes[i - 1][0], STDIN_FILENO);
@@ -125,7 +125,7 @@ void	ft_exec_last(t_data *data, t_token **args, int last)
 	if (!data->childs[last])
 	{
 		close(data->pipes[last - 1][1]);
-		ft_redirection(data, args);
+		ft_redirection(data, args, last);
 		ft_check_last_heredoc(data, args);
 		cmd = ft_join_word(args);
 		dup2(data->fd_out, STDOUT_FILENO);
@@ -181,6 +181,15 @@ void	ft_exec_pipeline(t_data *data, t_token **args, size_t pipes)
 	ft_exec_last(data, &args[i], p);
 }
 
+int	ft_get_return_val(int status)
+{
+	if (WIFEXITED(status))
+		return(WEXITSTATUS(status));
+	if (WIFSIGNALED(status))
+		return(128 + WTERMSIG(status));
+	return (0);
+}
+
 int	ft_wait_all(t_data *data)
 {
 	int		status;
@@ -193,12 +202,7 @@ int	ft_wait_all(t_data *data)
 	while (data->childs[++i])
 	{
 		waitpid(data->childs[i], &status, 0);
-		if (WIFEXITED(status))
-			res = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
-			res = WTERMSIG(status);
-		else
-			res = 1;
+		res = ft_get_return_val(status);
 	}
 	return (res);
 }
@@ -207,10 +211,11 @@ void	ft_cmd(t_data *data, t_token **args)
 {
 	pid_t	f = fork();
 	char	*cmd;
+	int		status;
 
 	if (!f)
 	{
-		ft_redirection(data, args);
+		ft_redirection(data, args, 0);
 		ft_check_last_heredoc(data, args);
 		dup2(data->fd_in, STDIN_FILENO);
 		dup2(data->fd_out, STDOUT_FILENO);
@@ -218,7 +223,10 @@ void	ft_cmd(t_data *data, t_token **args)
 		ft_exec(data->env, cmd);
 	}
 	else
-		wait(NULL);
+	{
+		waitpid(f, &status, 0);
+		data->rtn_val = ft_get_return_val(status);
+	}
 }
 
 size_t	ft_count_exec_blocks(t_token **tokens)
@@ -245,39 +253,39 @@ size_t	ft_count_exec_blocks(t_token **tokens)
 
 void	ft_pipeline(t_data *data, t_token **tokens)
 {
-	t_token	**temp;
+	t_token	**pipeline;
 	size_t	offset;
 	size_t	pipes;
 
-
-	temp = tokens;
+	pipeline = tokens;
 	offset = 0;
 	if (ft_count_exec_blocks(tokens) == 1)
 		ft_cmd(data, tokens);
 	else
 	{
-		while (*temp)
+		while (*pipeline)
 		{
 			data->fd_in = dup(STDIN_FILENO);
 			data->fd_out = dup(STDOUT_FILENO);
-			pipes = ft_count_pipes(temp, &offset);
+			pipes = ft_count_pipes(pipeline, &offset);
+			data->nb_pipes = pipes;
 			if (pipes == 0)
-				ft_cmd(data, temp);
+				ft_cmd(data, pipeline);
 			else
 			{
 				data->childs = ft_update_childs(data, pipes + 1);
 				data->pipes = ft_update_pipes(data, pipes);
-				ft_exec_pipeline(data, temp, pipes);
-				ft_wait_all(data);
+				ft_exec_pipeline(data, pipeline, pipes);
+				data->rtn_val = ft_wait_all(data);
 			}
-			temp += offset;
-			if (!*temp)
+			pipeline += offset;
+			if (!*pipeline || (*pipeline && (((*pipeline)->type == D_AND && data->rtn_val != 0)
+				|| ((*pipeline)->type == D_PIPE && data->rtn_val == 0))))
 				break;
 			else
-				temp++;
+				pipeline++;
 		}
 	}
-
 }
 
 size_t	ft_count_pipes(t_token	**tokens, size_t *offset)
