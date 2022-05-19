@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/17 21:53:49 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/19 15:17:11 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,8 +216,8 @@ int main(int ac, char **av, char **env)
 		final = NULL;
 		regrouped = NULL;
 		prompt = ft_prompt(data->env);
-		input = readline(prompt);
-		// input = readline("$> ");
+		// input = readline(prompt);
+		input = readline("$> ");
 		if (!input)
 			break ;
 		if (*input)

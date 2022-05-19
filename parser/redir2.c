@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/16 13:41:13 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/18 17:54:54 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/19 12:46:23 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,9 @@ void	ft_glhf(t_data *data, t_token **args, t_list **env);
 void	ft_find_heredoc(t_data *data, t_token **args);
 void	ft_exec(t_list **env, char *arg);
 char	*ft_join_word(t_token **args);
-void	ft_check_last_heredoc(t_data *data, t_token **args);
+char	*ft_check_last_heredoc(t_data *data, t_token **args);
 void	ft_redirection(t_data *data, t_token **args, size_t i);
+void	ft_rd_in(t_data *data, char *arg, int i);
 
 pid_t	*ft_update_childs(t_data *data, size_t n)
 {
@@ -62,8 +63,10 @@ void	ft_close(int fd1, int fd2)
 void	ft_exec_first(t_data *data, t_token **args)
 {
 	char	*cmd;
+	char	*here_doc;
 	
-	data->childs[0] = fork();
+	here_doc = ft_check_last_heredoc(data, args);
+	data->childs[0] = fork();	
 	if (data->childs[0] < 0)
 	{
 		//ft_free_data(data);
@@ -73,7 +76,11 @@ void	ft_exec_first(t_data *data, t_token **args)
 	{
 		close(data->pipes[0][0]);
 		ft_redirection(data, args, 0);
-		ft_check_last_heredoc(data, args);
+		if (here_doc)
+		{
+			ft_rd_in(data, here_doc, 0);
+			free(here_doc);
+		}
 		cmd = ft_join_word(args);
 		dup2(data->fd_in, STDIN_FILENO);
 		dup2(data->pipes[0][1], STDOUT_FILENO);
@@ -89,7 +96,9 @@ void	ft_exec_first(t_data *data, t_token **args)
 void	ft_exec_mid(t_data *data, t_token **args, int i)
 {
 	char	*cmd;
+	char	*here_doc;
 	
+	here_doc = ft_check_last_heredoc(data, args);
 	data->childs[i] = fork();
 	if (data->childs[i] < 0)
 	{
@@ -100,7 +109,11 @@ void	ft_exec_mid(t_data *data, t_token **args, int i)
 	{
 		close(data->pipes[i][0]);
 		ft_redirection(data, args, i); 
-		ft_check_last_heredoc(data, args);
+		if (here_doc)
+		{
+			ft_rd_in(data, here_doc, i);
+			free(here_doc);
+		}
 		cmd = ft_join_word(args);
 		dup2(data->pipes[i - 1][0], STDIN_FILENO);
 		dup2(data->pipes[i][1], STDOUT_FILENO);
@@ -115,18 +128,21 @@ void	ft_exec_mid(t_data *data, t_token **args, int i)
 void	ft_exec_last(t_data *data, t_token **args, int last)
 {
 	char	*cmd;
+	char	*here_doc;
 
+	here_doc = ft_check_last_heredoc(data, args);
 	data->childs[last] = fork();
 	if (data->childs[last] < 0)
-	{
-		//ft_free_data(data);
 		return ;
-	}
 	if (!data->childs[last])
 	{
 		close(data->pipes[last - 1][1]);
 		ft_redirection(data, args, last);
-		ft_check_last_heredoc(data, args);
+		if (here_doc)
+		{
+			ft_rd_in(data, here_doc, last);
+			free(here_doc);
+		}
 		cmd = ft_join_word(args);
 		dup2(data->fd_out, STDOUT_FILENO);
 		dup2(data->pipes[last - 1][0], STDIN_FILENO);
@@ -168,15 +184,12 @@ void	ft_exec_pipeline(t_data *data, t_token **args, size_t pipes)
 	size_t	p;
 	i = 0;
 	p = 1;
-	ft_find_heredoc(data, args);
 	ft_exec_first(data, args);
 	while (--pipes)
 	{
-		usleep(800);
 		i += ft_go_to_next_pipe(&args[i]) + 1;
 		ft_exec_mid(data, &args[i], p++);
 	}
-	usleep(800);
 	i += ft_go_to_next_pipe(&args[i]) + 1;
 	ft_exec_last(data, &args[i], p);
 }
@@ -212,11 +225,14 @@ void	ft_cmd(t_data *data, t_token **args)
 	pid_t	f = fork();
 	char	*cmd;
 	int		status;
+	char	*here_doc;
 
 	if (!f)
 	{
 		ft_redirection(data, args, 0);
-		ft_check_last_heredoc(data, args);
+		here_doc = ft_check_last_heredoc(data, args);
+		if (here_doc)
+			ft_rd_in(data, here_doc, 0);
 		dup2(data->fd_in, STDIN_FILENO);
 		dup2(data->fd_out, STDOUT_FILENO);
 		cmd = ft_join_word(args);
@@ -259,6 +275,7 @@ void	ft_pipeline(t_data *data, t_token **tokens)
 
 	pipeline = tokens;
 	offset = 0;
+	ft_find_heredoc(data, tokens);
 	if (ft_count_exec_blocks(tokens) == 1)
 		ft_cmd(data, tokens);
 	else
@@ -279,13 +296,15 @@ void	ft_pipeline(t_data *data, t_token **tokens)
 				data->rtn_val = ft_wait_all(data);
 			}
 			pipeline += offset;
-			if (!*pipeline || (*pipeline && (((*pipeline)->type == D_AND && data->rtn_val != 0)
-				|| ((*pipeline)->type == D_PIPE && data->rtn_val == 0))))
+			if (!*pipeline || (((*pipeline)->type == D_AND && data->rtn_val != 0)
+				|| ((*pipeline)->type == D_PIPE && data->rtn_val == 0)))
 				break;
 			else
 				pipeline++;
 		}
 	}
+	data->act_heredoc = -1;
+	data->nb_heredoc = 0;
 }
 
 size_t	ft_count_pipes(t_token	**tokens, size_t *offset)
@@ -304,3 +323,4 @@ size_t	ft_count_pipes(t_token	**tokens, size_t *offset)
 		*offset = i;
 	return (count);
 }
+
