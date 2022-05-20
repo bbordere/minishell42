@@ -12,8 +12,6 @@
 
 #include "parser.h"
 
-char	**ft_lst_to_tab(t_list **lst);
-
 void	ft_rd_in(t_data *data, char *arg, int i)
 {
 	int	newfd;
@@ -129,11 +127,13 @@ void	ft_get_cmd(char **command)
 	ssize_t	i;
 
 	i = -1;
+	if (!command || !*command)
+		return ;
 	while (command[++i])
 	{
 		if (command[i][0] == '\'' || command[i][0] == '\"')
 		{
-			if (command[i][ft_strlen(command[i]) - 2] == command[i][ft_strlen(command[i]) - 3] && ft_issep(command[i][ft_strlen(command[i]) - 2]))
+			if (ft_strlen(command[i]) > 2 && command[i][ft_strlen(command[i]) - 2] == command[i][ft_strlen(command[i]) - 3] && ft_issep(command[i][ft_strlen(command[i]) - 2]))
 				command[i][ft_strlen(command[i]) - 1] = '\0';
 			ft_memmove(command[i], &command[i][1], ft_strlen(command[i]));
 			command[i][ft_strlen(command[i]) - 1] = '\0';
@@ -161,14 +161,14 @@ void	ft_exec(t_list **env, char *arg)
 	{
 		ft_command_not_found(command[0]);
 		ft_free_tab((void **)command);
-		exit(EXIT_FAILURE);
+		exit(127);
 	}
 	if (execve(path, command, ft_lst_to_tab(env)))
 	{
 		ft_command_not_found(command[0]);
 		ft_free_tab((void **)command);
 		// free(path);
-		exit(EXIT_FAILURE);
+		exit(127);
 	}
 	ft_free_tab((void **)command);
 }

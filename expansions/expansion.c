@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/31 14:45:38 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/17 22:00:36 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/20 14:02:59 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	*ft_expand_return_code(char *str)
 {
 	char	*res;
 
-	res = ft_strjoin2(ft_strdup("{RETURN CODE}"), ft_strdup(&str[1]));
+	res = ft_itoa(g_global->rtn_val);
 	return (res);
 } 
 

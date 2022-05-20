@@ -6,17 +6,11 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/19 15:17:11 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/20 15:52:07 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "lexer/lexer.h"
-#include "expansions/expansions.h"
-#include "parser/parser.h"
-#include <readline/readline.h>
-#include <readline/history.h>
-
-void	ft_check_separator(t_data *data, t_token **args, t_list **env);
+#include "minishell.h"
 
 t_list	**ft_init_env(t_list **env, char **envp)
 {
@@ -194,6 +188,44 @@ char	*ft_prompt(t_list **env)
 	return (prompt);
 }
 
+void    handler_int(int sig)
+{
+	if (g_global->in_exec == 0)
+	{
+		if (sig == SIGINT)
+		{
+			ft_putstr_fd("\b\b  \b\b\n", 1);
+			printf("$> ");
+			g_global->rtn_val = 130;
+		}
+		else if (sig == SIGQUIT)
+			ft_putstr_fd("\b\b  \b\b\n", 1);
+	}
+	else if (sig == SIGINT)
+	{
+		kill(g_global->pid, SIGINT);
+		g_global->rtn_val = 130;
+	}
+}
+
+int ft_sig_init(void)
+{
+	struct sigaction sig_int;
+
+	g_global = malloc(sizeof(t_global));
+	if (!g_global)
+		return (0);
+	sig_int.sa_handler=&handler_int;
+	sigaction(SIGINT,&sig_int,0);
+	sigaction(SIGQUIT,&sig_int,0);
+	g_global->in_exec = 0;
+	g_global->pid = 0;
+	g_global->rtn_val = 0;
+	return (1);
+}
+
+t_global	*g_global;
+
 int main(int ac, char **av, char **env)
 {
 	t_data *data;
@@ -204,9 +236,7 @@ int main(int ac, char **av, char **env)
 	char	**regrouped; // Tableau des strings "regroupees"
 	char	*prompt;
 	
-	(void)ac;
-	(void)av;
-
+	ft_sig_init();
 	data = ft_init_data(env);
 	while (1)
 	{
@@ -216,12 +246,13 @@ int main(int ac, char **av, char **env)
 		final = NULL;
 		regrouped = NULL;
 		prompt = ft_prompt(data->env);
-		// input = readline(prompt);
-		input = readline("$> ");
+		input = readline(prompt);
+		// input = readline("$> ");
 		if (!input)
 			break ;
 		if (*input)
 		{
+			g_global->in_exec = 1;
 			add_history(input);
 			lexed = ft_lexer(input);
 			tokens = ft_tokenize(lexed);
@@ -233,7 +264,6 @@ int main(int ac, char **av, char **env)
 				free(input);
 				continue ;
 			}
-
 			ft_update_type(tokens, 0);
 			ft_expand(tokens, data->env, data->wd);
 			regrouped = ft_join(tokens);
@@ -255,6 +285,7 @@ int main(int ac, char **av, char **env)
 			// ft_check_builtin(final);  //Desactiver pour les tests de pipes
 			// ft_check_separator(data, final, data->env); // Changer le nom de la fonction
 			ft_free_loop((void **)lexed, (void **)regrouped, tokens, final);
+			g_global->in_exec = 0;
 		}
 		free(prompt);
 		free(input);
