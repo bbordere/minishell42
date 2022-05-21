@@ -125,16 +125,16 @@ void	ft_free_command_norme(char *arg)
 void	ft_get_cmd(char **command)
 {
 	ssize_t	i;
+	ssize_t	j;
+	size_t	len;
 
 	i = -1;
 	if (!command || !*command)
 		return ;
 	while (command[++i])
 	{
-		if (command[i][0] == '\'' || command[i][0] == '\"')
+		if (ft_issep(command[i][0]))
 		{
-			if (ft_strlen(command[i]) > 2 && command[i][ft_strlen(command[i]) - 2] == command[i][ft_strlen(command[i]) - 3] && ft_issep(command[i][ft_strlen(command[i]) - 2]))
-				command[i][ft_strlen(command[i]) - 1] = '\0';
 			ft_memmove(command[i], &command[i][1], ft_strlen(command[i]));
 			command[i][ft_strlen(command[i]) - 1] = '\0';
 		}
@@ -267,8 +267,7 @@ char	*ft_join_word(t_token **args)
 	char	*cmd;
 
 	i = 0;
-	cmd = malloc(sizeof(char));
-	*cmd = 0;
+	cmd = NULL;
 	while (args[i] && args[i]->type != PIPE
 		&& args[i]->type != D_PIPE && args[i]->type != D_AND)
 	{
@@ -281,6 +280,8 @@ char	*ft_join_word(t_token **args)
 	}
 	if (!cmd || !(*cmd))
 		return (NULL);
+	if (cmd[ft_strlen(cmd) - 1] == ' ')
+		cmd[ft_strlen(cmd) - 1] = '\0';
 	return (cmd);
 }
 

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/20 15:52:07 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/21 13:51:40 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,12 +179,12 @@ char	*ft_prompt(t_list **env)
 	pwd = ft_get_var(env, "PWD");
 	pwd = ft_strrchr(pwd, '/') + 1;
 	home = ft_get_var(env, "HOME");
-	prompt = ft_strjoin("\033[0;32m", ft_strjoin(ft_charjoin(ft_get_var(env, "LOGNAME"), '@'), "minishell\033[0;37m:\033[0;34m"));
+	prompt = ft_strjoin("\1\033[0;32m\2", ft_strjoin(ft_charjoin(ft_get_var(env, "LOGNAME"), '@'), "minishell\1\033[0;37m:\033[0;34m\2"));
 	if (ft_strstr(pwd, home))
 		prompt = ft_strjoin(prompt, ft_strjoin("~", pwd + ft_strlen(home)));
 	else
 		prompt = ft_strjoin(prompt, pwd);
-	prompt = ft_strjoin(prompt, "\033[0;37m$ ");
+	prompt = ft_strjoin(prompt, "\1\033[0;37m\2$ ");
 	return (prompt);
 }
 
@@ -270,6 +270,12 @@ int main(int ac, char **av, char **env)
 			final = ft_tokenize(regrouped);
 			ft_update_type(final, 1);
 			ft_pipeline(data, final);
+			// int i = 0;
+			// while (final[i])
+			// {
+			// 	printf("%s:%d\n", final[i]->val, final[i]->type);
+			// 	i++;
+			// }			
 			// int i = 0;
 			// while (tokens[i])
 			// {

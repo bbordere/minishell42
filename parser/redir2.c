@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/16 13:41:13 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/20 15:29:25 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/21 13:55:43 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ void	ft_exec_builtin_pipe(t_data *data, t_token **args)
 
 	command = ft_join_word(args);
 	cmd = ft_lexer(command);
+	ft_get_cmd(cmd);
 	if (!ft_strcmp("cd", cmd[0]))
 			g_global->rtn_val = ft_cd(data, cmd);
 	else if (!ft_strcmp("pwd", cmd[0]))
