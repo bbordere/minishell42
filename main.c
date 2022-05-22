@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/21 13:51:40 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/23 00:09:05 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,18 +173,22 @@ char	*ft_prompt(t_list **env)
 	char	*prompt;
 	char	*pwd;
 	char	*home;
+	char	*temp;
 
 	if (!*env)
 		return (ft_strdup("minishell > "));
 	pwd = ft_get_var(env, "PWD");
+	temp = pwd;
 	pwd = ft_strrchr(pwd, '/') + 1;
 	home = ft_get_var(env, "HOME");
-	prompt = ft_strjoin("\1\033[0;32m\2", ft_strjoin(ft_charjoin(ft_get_var(env, "LOGNAME"), '@'), "minishell\1\033[0;37m:\033[0;34m\2"));
+	prompt = ft_strjoin2("\1\033[0;32m\2", ft_strjoin1(ft_charjoin(ft_get_var(env, "LOGNAME"), '@'), "minishell\1\033[0;37m:\033[0;34m\2"));
 	if (ft_strstr(pwd, home))
-		prompt = ft_strjoin(prompt, ft_strjoin("~", pwd + ft_strlen(home)));
+		prompt = ft_strjoin1(prompt, ft_strjoin2("~", pwd + ft_strlen(home)));
 	else
-		prompt = ft_strjoin(prompt, pwd);
-	prompt = ft_strjoin(prompt, "\1\033[0;37m\2$ ");
+		prompt = ft_strjoin1(prompt, pwd);
+	prompt = ft_strjoin1(prompt, "\1\033[0;37m\2$ ");
+	free(home);
+	free(temp);
 	return (prompt);
 }
 
@@ -299,7 +303,11 @@ int main(int ac, char **av, char **env)
 	free(prompt);
 	printf("exit\n");
 	rl_clear_history();
-
+	free(g_global);
+	if (data->pipes)
+		ft_free_tab((void **)data->pipes);
+	if (data->childs)
+		free(data->childs);
 	ft_lstdel_all(data->env);
 	ft_lstdel_all(data->wd);
 	free(data);

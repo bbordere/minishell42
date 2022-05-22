@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/16 13:41:13 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/21 13:55:43 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/23 01:00:47 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	**ft_update_pipes(t_data *data, size_t n)
 	ssize_t	i;
 
 	if (data->pipes)
-		free(ft_free_tab((void **)data->pipes));
+		ft_free_tab((void **)data->pipes);
 	pipes = ft_calloc(n + 1, sizeof(int *));
 	if (!pipes)
 		return (NULL); //PROTECT
@@ -309,6 +309,8 @@ int     ft_exec_builtin(t_data *data, t_token **args)
 				g_global->rtn_val = ft_unset(data->env, cmd);
 		else if (!ft_strcmp("exit", cmd[0]))
 				;
+		ft_free_tab((void **)cmd);
+		free(command);
 }
 
 void	ft_cmd(t_data *data, t_token **args)

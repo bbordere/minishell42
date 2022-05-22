@@ -272,10 +272,7 @@ char	*ft_join_word(t_token **args)
 		&& args[i]->type != D_PIPE && args[i]->type != D_AND)
 	{
 		if (args[i]->type == WORD)
-		{
-			cmd = ft_strjoin(cmd, args[i]->val);
-			cmd = ft_strjoin(cmd, " ");
-		}
+			cmd = ft_strjoin1(ft_strjoin1(cmd, args[i]->val), " ");
 		i++;
 	}
 	if (!cmd || !(*cmd))
@@ -308,7 +305,7 @@ char	*ft_check_last_heredoc(t_data *data, t_token **args)
 			cnti = i;
 		i++;
 	}
-	name = ft_strjoin("/tmp/minishell", ft_itoa(data->act_heredoc));
+	name = ft_strjoin2("/tmp/minishell", ft_itoa(data->act_heredoc));
 	if (cnth > cnti)
 		return (name);
 	else
