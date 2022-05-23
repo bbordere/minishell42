@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/23 00:09:05 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/23 16:14:34 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,7 @@ void    handler_int(int sig)
 	}
 	else if (sig == SIGINT)
 	{
+		ft_putstr_fd("\n", 1);
 		kill(g_global->pid, SIGINT);
 		g_global->rtn_val = 130;
 	}

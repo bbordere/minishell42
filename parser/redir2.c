@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/16 13:41:13 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/23 01:00:47 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/23 16:22:29 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -223,6 +223,8 @@ void	ft_exec_pipeline(t_data *data, t_token **args, size_t pipes)
 
 int	ft_get_return_val(int status)
 {
+	if (g_global->rtn_val == 130)
+		return (130);
 	if (WIFEXITED(status))
 		return(WEXITSTATUS(status));
 	if (WIFSIGNALED(status))
@@ -269,8 +271,10 @@ int     ft_check_builtin(t_data *data, t_token **args)
 		char *cmd;
 
 		i = 0;
-		while (args && args[i]->type != WORD)
+		while (args[i] && args[i]->type != WORD)
 				i++;
+		if (!args[i])
+			return (0);
 		cmd = args[i]->val;
 		if (ft_glhf("cd", cmd)
 			|| ft_glhf("pwd", cmd)
@@ -289,9 +293,16 @@ int     ft_exec_builtin(t_data *data, t_token **args)
 {
 		char    *command;
 		char    **cmd;
+		int		in;
+		int		out;
 
+		
+		in = dup(data->fd_in);
+		out	= dup(data->fd_out);
 		ft_redirection(data, args, 0);
 		ft_check_last_heredoc(data, args);
+		dup2(data->fd_in, STDIN_FILENO);
+		dup2(data->fd_out, STDOUT_FILENO);
 		command = ft_join_word(args);
 		cmd = ft_lexer(command);
 		ft_get_cmd(cmd);
@@ -310,6 +321,8 @@ int     ft_exec_builtin(t_data *data, t_token **args)
 		else if (!ft_strcmp("exit", cmd[0]))
 				;
 		ft_free_tab((void **)cmd);
+		dup2(in, STDIN_FILENO);
+		dup2(out, STDOUT_FILENO);
 		free(command);
 }
 
@@ -325,8 +338,8 @@ void	ft_cmd(t_data *data, t_token **args)
 		ft_exec_builtin(data, args);
 		return ;
 	}
-	f = fork();
-	if (!f)
+	g_global->pid = fork();
+	if (!g_global->pid )
 	{
 		ft_redirection(data, args, 0);
 		here_doc = ft_check_last_heredoc(data, args);
@@ -339,7 +352,7 @@ void	ft_cmd(t_data *data, t_token **args)
 	}
 	else
 	{
-		waitpid(f, &status, 0);
+		waitpid(g_global->pid , &status, 0);
 		g_global->rtn_val = ft_get_return_val(status);
 	}
 }
@@ -372,6 +385,8 @@ void	ft_pipeline(t_data *data, t_token **tokens)
 	size_t	offset;
 	size_t	pipes;
 
+	data->fd_in = dup(STDIN_FILENO);
+	data->fd_out = dup(STDOUT_FILENO);
 	pipeline = tokens;
 	offset = 0;
 	ft_find_heredoc(data, tokens);
@@ -404,6 +419,7 @@ void	ft_pipeline(t_data *data, t_token **tokens)
 	}
 	data->act_heredoc = -1;
 	data->nb_heredoc = 0;
+	data->nb_pipes = 0;
 }
 
 size_t	ft_count_pipes(t_token	**tokens, size_t *offset)
