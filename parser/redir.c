@@ -141,7 +141,7 @@ void	ft_get_cmd(char **command)
 	}
 }
 
-void	ft_exec(t_list **env, char *arg)
+void	ft_exec(t_data *data, t_list **env, char *arg)
 {
 	char	**command;
 	char	*path;

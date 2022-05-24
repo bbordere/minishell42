@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:14:11 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/24 11:17:54 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/24 12:02:00 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,10 @@ typedef struct s_data{
 
 typedef struct s_global
 {
-		int		in_exec;
-		int		pid;
-		int		rtn_val;
-		char	*prompt;
+	int	in_exec;
+	int	pid;
+	int	rtn_val;
+	char	*prompt;
 }	t_global;
 
 extern t_global *g_global;

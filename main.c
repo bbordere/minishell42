@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/24 11:19:33 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/24 15:49:38 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ char	*ft_prompt(t_list **env)
 	temp = pwd;
 	pwd = ft_strrchr(pwd, '/') + 1;
 	home = ft_get_var(env, "HOME");
-	prompt = ft_strjoin2("\1\033[0;32m\2", ft_strjoin1(ft_charjoin(ft_get_var(env, "LOGNAME"), '@'), "minishell\1\033[0;37m:\033[0;34m\2"));
+	prompt = ft_strjoin2("\1\033[0;31m\2", ft_strjoin1(ft_charjoin(ft_get_var(env, "LOGNAME"), '@'), "ourshell\1\033[0;37m:\033[0;33m\2"));
 	if (ft_strstr(pwd, home))
 		prompt = ft_strjoin1(prompt, ft_strjoin2("~", pwd + ft_strlen(home)));
 	else
@@ -198,8 +198,11 @@ void    handler_int(int sig)
 	{
 		if (sig == SIGINT)
 		{
-			ft_putstr_fd("\b\b  \b\b\n", 1);
-			printf("%s", g_global->prompt);
+			write(2, "\n", 1); // Move to a new line
+			rl_replace_line("", 0); // Clear the previous text
+			rl_on_new_line();
+			if (g_global->pid == 0)
+				rl_redisplay();
 			g_global->rtn_val = 130;
 		}
 		else if (sig == SIGQUIT)
@@ -208,23 +211,24 @@ void    handler_int(int sig)
 	else if (sig == SIGINT)
 	{
 		ft_putstr_fd("\n", 1);
-		kill(g_global->pid, SIGINT);
 		g_global->rtn_val = 130;
+		kill(g_global->pid, SIGINT);
 	}
 }
 
 int ft_sig_init(void)
 {
-	struct sigaction sig_int;
+	struct sigaction sig = {0};
 
+	sig.sa_handler=&handler_int;
+	sigemptyset(&sig.sa_mask);
+	sigaction(SIGINT,&sig,0);
+	sigaction(SIGQUIT,&sig,0);
 	g_global = malloc(sizeof(t_global));
 	if (!g_global)
 		return (0);
-	sig_int.sa_handler=&handler_int;
-	sigaction(SIGINT,&sig_int,0);
-	sigaction(SIGQUIT,&sig_int,0);
 	g_global->in_exec = 0;
-	g_global->pid = 0;
+	g_global->pid = -1;
 	g_global->rtn_val = 0;
 	return (1);
 }
@@ -252,6 +256,8 @@ int main(int ac, char **av, char **env)
 		g_global->prompt = ft_prompt(data->env);
 		input = readline(g_global->prompt);
 		// input = readline("$> ");
+		// ft_putstr_fd(g_global->prompt, 1);
+		// input = get_next_line(0);
 		if (!input)
 			break ;
 		if (*input)
@@ -260,7 +266,8 @@ int main(int ac, char **av, char **env)
 			add_history(input);
 			lexed = ft_lexer(input);
 			tokens = ft_tokenize(lexed);
-
+			data->fd_in = dup(STDIN_FILENO);
+			data->fd_out = dup(STDOUT_FILENO);
 			if (!ft_check_grammar(tokens)) // Renvoie le msg d'erreur dans la fonction ft_check_grammar
 			{
 				ft_free((void **)lexed);
@@ -303,7 +310,6 @@ int main(int ac, char **av, char **env)
 	free(g_global->prompt);
 	printf("exit\n");
 	rl_clear_history();
-	free(g_global);
 	if (data->pipes)
 		ft_free_tab((void **)data->pipes);
 	if (data->childs)
@@ -312,6 +318,6 @@ int main(int ac, char **av, char **env)
 	ft_lstdel_all(data->wd);
 	free(data);
 	ft_free_loop((void **)lexed, (void **)regrouped, tokens, final);
-
+	free(g_global);
 	return (0);
 }
