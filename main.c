@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/23 16:14:34 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/24 11:19:33 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,7 @@ void    handler_int(int sig)
 		if (sig == SIGINT)
 		{
 			ft_putstr_fd("\b\b  \b\b\n", 1);
-			printf("$> ");
+			printf("%s", g_global->prompt);
 			g_global->rtn_val = 130;
 		}
 		else if (sig == SIGQUIT)
@@ -239,7 +239,6 @@ int main(int ac, char **av, char **env)
 	char	**lexed; // Tableau des strings une fois "lexee"
 	char	*input;
 	char	**regrouped; // Tableau des strings "regroupees"
-	char	*prompt;
 	
 	ft_sig_init();
 	data = ft_init_data(env);
@@ -250,8 +249,8 @@ int main(int ac, char **av, char **env)
 		tokens = NULL;
 		final = NULL;
 		regrouped = NULL;
-		prompt = ft_prompt(data->env);
-		input = readline(prompt);
+		g_global->prompt = ft_prompt(data->env);
+		input = readline(g_global->prompt);
 		// input = readline("$> ");
 		if (!input)
 			break ;
@@ -298,10 +297,10 @@ int main(int ac, char **av, char **env)
 			ft_free_loop((void **)lexed, (void **)regrouped, tokens, final);
 			g_global->in_exec = 0;
 		}
-		free(prompt);
+		free(g_global->prompt);
 		free(input);
 	}
-	free(prompt);
+	free(g_global->prompt);
 	printf("exit\n");
 	rl_clear_history();
 	free(g_global);
