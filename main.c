@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/05 10:28:52 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/24 15:49:38 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/25 16:39:12 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,10 +178,14 @@ char	*ft_prompt(t_list **env)
 	if (!*env)
 		return (ft_strdup("minishell > "));
 	pwd = ft_get_var(env, "PWD");
+	if (!*pwd)
+		return (free(pwd), ft_strdup("minishell > "));
 	temp = pwd;
 	pwd = ft_strrchr(pwd, '/') + 1;
 	home = ft_get_var(env, "HOME");
-	prompt = ft_strjoin2("\1\033[0;31m\2", ft_strjoin1(ft_charjoin(ft_get_var(env, "LOGNAME"), '@'), "ourshell\1\033[0;37m:\033[0;33m\2"));
+	if (!*home)
+		return (free(temp), free(home), ft_strdup("minishell > "));
+	prompt = ft_strjoin2("\1\033[0;31m\2", ft_strjoin1(ft_strdup("coucou"), "ourshell\1\033[0;37m:\033[0;33m\2"));
 	if (ft_strstr(pwd, home))
 		prompt = ft_strjoin1(prompt, ft_strjoin2("~", pwd + ft_strlen(home)));
 	else
@@ -194,14 +198,15 @@ char	*ft_prompt(t_list **env)
 
 void    handler_int(int sig)
 {
+
 	if (g_global->in_exec == 0)
 	{
 		if (sig == SIGINT)
 		{
-			write(2, "\n", 1); // Move to a new line
+			write(1, "\n", 1); // Move to a new line
 			rl_replace_line("", 0); // Clear the previous text
 			rl_on_new_line();
-			if (g_global->pid == 0)
+			if (g_global->pid == 0 || g_global->pid == -1)
 				rl_redisplay();
 			g_global->rtn_val = 130;
 		}
@@ -222,8 +227,9 @@ int ft_sig_init(void)
 
 	sig.sa_handler=&handler_int;
 	sigemptyset(&sig.sa_mask);
-	sigaction(SIGINT,&sig,0);
-	sigaction(SIGQUIT,&sig,0);
+	signal(SIGINT, &handler_int);
+	signal(SIGABRT, &handler_int);
+	signal(SIGSEGV, &handler_int);
 	g_global = malloc(sizeof(t_global));
 	if (!g_global)
 		return (0);
@@ -284,8 +290,8 @@ int main(int ac, char **av, char **env)
 			// int i = 0;
 			// while (final[i])
 			// {
-			// 	printf("%s:%d\n", final[i]->val, final[i]->type);
-			// 	i++;
+				// printf("%s:%d\n", final[i]->val, final[i]->type);
+				// i++;
 			// }			
 			// int i = 0;
 			// while (tokens[i])

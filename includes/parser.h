@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:20:53 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/24 10:54:25 by tdesmet          ###   ########.fr       */
+/*   Updated: 2022/05/25 15:51:05 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ int		ft_check_here_doc(t_token **tokens, size_t i);
 int     ft_check_builtin(t_data *data, t_token **args);
 void	ft_get_cmd(char **command);
 int     ft_exec_builtin(t_data *data, t_token **args);
+void	ft_restore_fd(t_data *data);
 size_t	ft_count_pipes(t_token	**tokens, size_t *offset);
 void	ft_pipeline(t_data *data, t_token **tokens);
 char	**ft_lst_to_tab(t_list **lst);

@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/16 13:41:13 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/24 15:48:42 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/05/25 15:53:57 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,16 +251,16 @@ int	ft_wait_all(t_data *data)
 
 int     ft_glhf(char *args, char *args2)
 {
-		int     bastien;
+		int     i;
 
-		bastien = 0;
-		while (args[bastien] && args2[bastien])
+		i = 0;
+		while (args[i] && args2[i])
 		{
-				if (args[bastien] != args2[bastien])
+				if (args[i] != args2[i])
 						return (0);
-				bastien++;
+				i++;
 		}
-		if (!args2[bastien] || args2[bastien] == ' ')
+		if (!args2[i] || args2[i] == ' ')
 				return (1);
 		return (0);
 }
