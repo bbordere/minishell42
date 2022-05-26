@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/28 08:10:05 by tdesmet           #+#    #+#             */
-/*   Updated: 2022/05/23 15:45:13 by tdesmet          ###   ########.fr       */
+/*   Updated: 2022/05/26 10:05:55 by tdesmet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,29 +32,56 @@ char	*ft_check_unset_arg(char *str)
 	return (str);
 }
 
+char	*ft_get_name(char *str)
+{
+	int		i;
+	char	*name;
+
+	i = 0;
+	while (str[i] && str[i] != '=')
+		i++;
+	name = ft_strdup(str);
+	name[i] = 0;
+	return (name);
+}
+
+int	ft_check_first_env(t_list **env, t_list *temp, char *str, char *name)
+{
+	if (temp && (!ft_strncmp(temp->content, str, ft_strlen(str))
+			|| !ft_strcmp(name, temp->content)))
+	{
+		*env = (*env)->next;
+		free(temp->content);
+		free(temp);
+		free(name);
+		return (1);
+	}
+	return (0);
+}
+
 void	ft_del_env(t_list **env, char *str)
 {
 	t_list	*temp;
 	t_list	*save;
 	int		name_lenght;
+	char	*name;
 
+	name = ft_get_name(str);
 	temp = *env;
 	name_lenght = ft_strlen(str);
-	if (temp->next && !ft_strncmp(temp->next->content, str, name_lenght))
-	{
-		*env = (*env)->next;
-		free(temp->content);
-		free(temp);
+	if (ft_check_first_env(env, temp, str, name))
 		return ;
-	}
-	while (temp->next && ft_strncmp(temp->next->content, str, name_lenght))
+	while (temp->next && ft_strncmp(temp->next->content, str, name_lenght)
+		&& ft_strcmp(name, temp->next->content))
 		temp = temp->next;
+	free(name);
 	if (!temp->next)
 		return ;
 	else
 	{
 		save = temp->next;
 		temp->next = temp->next->next;
+		free(save->content);
 		free(save);
 	}
 }
@@ -67,7 +94,7 @@ int	ft_unset(t_list **env, char **arg)
 
 	i = 1;
 	ret = 0;
-	while (arg && env && arg[i])
+	while (arg && arg[i] && env && *env)
 	{
 		name = NULL;
 		name = ft_check_unset_arg(arg[i]);
