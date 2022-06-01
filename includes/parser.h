@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/20 15:20:53 by bbordere          #+#    #+#             */
-/*   Updated: 2022/05/29 12:45:08 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/06/01 18:56:12 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@ int		ft_isop(int type);
 int		ft_check_grammar(t_token **tokens);
 int		ft_check_quotes(t_token	*token, char *quote);
 int		ft_check_here_doc(t_token **tokens, size_t i);
-int		ft_check_builtin(t_data *data, t_token **args);
+int		ft_check_builtin(t_token **args);
 void	ft_get_cmd(char **command);
-int		ft_exec_builtin(t_data *data, t_token **args);
+void	ft_exec_builtin(t_data *data, t_token **args);
 void	ft_restore_fd(t_data *data);
 size_t	ft_count_pipes(t_token	**tokens, size_t *offset);
 void	ft_pipeline(t_data *data, t_token **tokens);
@@ -50,7 +50,7 @@ int		ft_env(t_list **env);
 int		ft_export(t_list **env, char **arg);
 int		ft_pwd(t_data *data);
 int		ft_unset(t_list **env, char **arg);
-void	ft_exit(char **args);
+void	ft_exit(t_data *data, char **args, char *command);
 void	ft_free_lexer(t_data *data);
 void	ft_free_data(t_data *data);
 void	ft_rd_in(t_data *data, char *arg, int i);
@@ -79,4 +79,16 @@ void	ft_close(int fd1, int fd2);
 void	ft_exec_pipeline(t_data *data, t_token **args, size_t pipes);
 int		ft_get_return_val(int status);
 int		ft_wait_all(t_data *data);
+void	*ft_free_tokens(t_token **tokens);
+void	ft_free_lexer(t_data *data);
+void	ft_free_data(t_data *data);
+void	ft_lstdel_all(t_list **lst);
+int		ft_sig_init(void);
+void	ft_builtin(t_data *data, char **cmd, char *command);
+void	ft_exec_builtin_pipe(t_data *data, t_token **args);
+void	ft_exec_builtin(t_data *data, t_token **args);
+void	ft_child(t_data *data, t_token **args, int in, int out);
+int		ft_glhf(char *args, char *args2);
+void	ft_close(int fd1, int fd2);
+
 #endif
