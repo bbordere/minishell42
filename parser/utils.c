@@ -6,7 +6,7 @@
 /*   By: bbordere <bbordere@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/26 16:31:09 by bbordere          #+#    #+#             */
-/*   Updated: 2022/06/01 15:36:16 by bbordere         ###   ########.fr       */
+/*   Updated: 2022/06/05 11:33:17 by bbordere         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,15 @@
 
 char	*ft_check_path(char **paths, char *cmd)
 {
-	char	*tmp;
-	char	*command;
-	int		i;
+	char		*tmp;
+	char		*command;
+	size_t		i;
 
+	i = 0;
+	while (cmd[i] && (cmd[i] == '/' || cmd[i] == '.'))
+		i++;
+	if (!cmd[i])
+		return (NULL);
 	i = 0;
 	while (paths[i])
 	{
@@ -30,30 +35,6 @@ char	*ft_check_path(char **paths, char *cmd)
 		i++;
 	}
 	return (NULL);
-}
-
-char	*ft_search_path(t_list **env, char *cmd)
-{
-	char	**paths;
-	char	*command;
-	t_list	*temp;
-
-	if (!access(cmd, X_OK | F_OK) && (!ft_strncmp(cmd, "./", 2)
-			|| !ft_strncmp(cmd, "/", 1)))
-		return (cmd);
-	if (!env || !(*env))
-		return (NULL);
-	temp = *env;
-	while (temp && temp->next && ft_strncmp("PATH=", temp->content, 5))
-		temp = temp->next;
-	if (!temp->next || ft_strncmp("PATH=", temp->content, 5))
-		return (NULL);
-	paths = ft_split(temp->content + 5, ':');
-	command = ft_check_path(paths, cmd);
-	ft_free_tab((void **)paths);
-	if (!command)
-		return (NULL);
-	return (command);
 }
 
 void	ft_command_not_found(char *arg)
@@ -85,4 +66,26 @@ void	ft_get_cmd(char **command)
 			command[i][ft_strlen(command[i]) - 1] = '\0';
 		}
 	}
+}
+
+size_t	ft_count_exec_blocks(t_token **tokens)
+{
+	size_t	res;
+	size_t	i;
+
+	res = 1;
+	i = 0;
+	while (tokens[i])
+	{
+		while (tokens[i] && tokens[i]->type != PIPE
+			&& tokens[i]->type != D_PIPE && tokens[i]->type != D_AND)
+			i++;
+		if (tokens[i] && (tokens[i]->type == PIPE
+				|| tokens[i]->type == D_PIPE || tokens[i]->type == D_AND))
+		{
+			res++;
+			i++;
+		}
+	}
+	return (res);
 }
