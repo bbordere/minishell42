@@ -12,14 +12,14 @@
 
 CC = cc
 
-CFLAGS = -g3 -I includes/ -Wall -Werror -Wextra
+CFLAGS = -I includes/ -Wall -Werror -Wextra
 
-FILES = $(wildcard builtin/*.c) $(wildcard lexer/*.c) $(wildcard parser/*.c) $(wildcard expansions/*.c) main.c cleaning.c init.c utils.c signal.c
+FILES = $(wildcard builtin/*.c) $(wildcard lexer/*.c) $(wildcard parser/*.c) $(wildcard expansions/*.c) $(wildcard utils/*.c)
 
 OBJS = $(FILES:.c=.o)
 
 %.o: %.c
-	@printf "\033[0;33mCompiling camarade: %-33.33s\r" $@
+	@printf "\033[0;33mCompiling file: %-33.33s\r" $@
 	@$(CC) $(CFLAGS) -c $< -o $@
 
 NAME = minishell
@@ -27,7 +27,6 @@ NAME = minishell
 $(NAME): $(OBJS)
 	@ $(MAKE) -C libft all --no-print-directory
 	@ $(CC) $(CFLAGS) $(OBJS) -lreadline libft/libft.a  -o  $(NAME) 
-	@ printf '\033[0;32mWELCOME TO THE GULAG !!!                \033[0m\n'
 	@ echo  "                                 \033[5;38;2;251;208;54m  █                                                "
 	@ echo  "                                 \033[5;38;2;251;208;54m ███                                               "
 	@ echo  "\033[0;38;2;186;11;24m  ██████╗ ██╗   ██╗██████╗  \033[5;38;2;251;208;54m▄▄▄▄▄█████▄▄▄▄▄\033[0;38;2;186;11;24m  ███████╗██╗  ██╗███████╗██╗     ██╗     "
