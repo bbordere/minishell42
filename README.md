@@ -1,4 +1,4 @@
-#minishell
+# minishell
 
 Minishell is 42 project that involves the development of our own custom bash version, which is designed to interpret user prompts, execute programs with the specified arguments, and include some built-in functions.
 
